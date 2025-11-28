@@ -1,83 +1,80 @@
-/* AnatoFlow v22 PRO – Analizador IA LOCAL + HUGGING FACE REAL (demo 10 días) */
+/* AnatoFlow v22 PRO – IA LOCAL (siempre) + HUGGING FACE (solo con clave personal) */
 (function () {
   "use strict";
 
   const KEY_MUESTRA = "anatoflow_muestra_v22";
-  const KEY_DEMO_START = "anatoflow_demo_start";
-  const DEMO_DIAS = 10; // ← Cambia aquí si quieres más/menos días
-
-  // ← PEGA AQUÍ TU CLAVE HUGGING FACE (hf_xxxxxx)
-  const HF_TOKEN = "PEGA_TU_CLAVE_AQUÍ";   // ¡¡REEMPLAZA ESTO!!
+  const KEY_HF_TOKEN = "anatoflow_hf_token"; // clave guardada solo en el móvil del usuario
 
   let lastFile = null;
-  let modoIA = "local";
+  let modoIA = localStorage.getItem(KEY_HF_TOKEN) ? "hugging" : "local";
 
   const $ = (sel) => document.querySelector(sel);
 
-  // ─────── MODO LOCAL EDUCATIVO (siempre disponible) ───────
+  // MODO LOCAL EDUCATIVO (siempre disponible)
   function analizarLocal(organo) {
     const o = (organo || "").toLowerCase();
     const niveles = ["Normal", "Reactivo / Inflamatorio", "Atipia / Lesión bajo grado", "Sospecha de malignidad"];
     const nivel = niveles[Math.floor(Math.random() * niveles.length)];
 
     let comentario = "";
-    if (o.includes("tráquea") || o.includes("bronquio")) comentario = nivel === "Normal" ? "Epitelio pseudoestratificado ciliado preservado. Células caliciformes visibles." : nivel.includes("Reactivo") ? "Inflamación leve con infiltrado linfocitario." : nivel.includes("Atipia") ? "Núcleos ligeramente agrandados. Revisar." : "Alta celularidad, pleomorfismo nuclear. Posible carcinoma.";
-    else if (o.includes("pulmón")) comentario = nivel === "Normal" ? "Alvéolos bien formados, macrófagos normales." : "Posible carcinoma escamocelular o adenocarcinoma.";
-    else if (o.includes("mama")) comentario = nivel === "Normal" ? "Conductos y lobulillos normales." : "Posible carcinoma ductal invasivo.";
-    else comentario = "Tejido conservado. " + nivel.toLowerCase() + ".";
+    if (o.includes("tráquea") || o.includes("bronquio")) comentario = nivel === "Normal" ? "Epitelio pseudoestratificado ciliado bien conservado." : nivel.includes("Reactivo") ? "Inflamación leve." : nivel.includes("Atipia") ? "Núcleos agrandados, revisar." : "Pleomorfismo y mitosis atípicas – sospecha maligna.";
+    else if (o.includes("pulmón")) comentario = nivel === "Normal" ? "Alvéolos normales." : "Posible carcinoma.";
+    else if (o.includes("mama")) comentario = nivel === "Normal" ? "Conductos normales." : "Posible carcinoma ductal.";
+    else comentario = "Tejido conservado – " + nivel.toLowerCase() + ".";
 
     return {
       status: nivel.includes("Normal") ? "OK" : nivel.includes("Reactivo") ? "Revisar" : "Rehacer",
       hallazgos: `Órgano: ${organo || "No indicado"}\nNivel: ${nivel}\n${comentario}`,
       educativo: comentario,
-      disclaimer: "Interpretación preliminar educativa. Requiere confirmación por patólogo."
+      disclaimer: "Interpretación preliminar educativa – confirmar con patólogo."
     };
   }
 
-  // ─────── MODO HUGGING FACE REAL ───────
-  async function analizarHugging(file, organo) {
+  // MODO HUGGING FACE (solo si hay clave)
+  async function analizarHugging(file) {
+    const token = localStorage.getItem(KEY_HF_TOKEN);
+    if (!token) return analizarLocal(""); // fallback
+
     const form = new FormData();
     form.append("inputs", file);
 
     const res = await fetch("https://api-inference.huggingface.co/models/microsoft/swin-tiny-patch4-window7-224", {
       method: "POST",
-      headers: { Authorization: `Bearer ${HF_TOKEN}` },
+      headers: { Authorization: `Bearer ${token}` },
       body: form
     });
 
-    if (!res.ok) return { status: "Error", hallazgos: "Error de conexión con IA real. Volviendo a modo local." };
+    if (!res.ok) return { status: "Error", hallazgos: "Error de conexión o clave inválida. Volviendo a modo local." };
 
     const data = await res.json();
-    // Aquí puedes cambiar el modelo cuando quieras (hay cientos específicos de histología)
     const top = data[0];
-    const etiqueta = top.label.toLowerCase();
-    const confianza = Math.round(top.score * 100);
-
-    let nivel = confianza > 85 ? "OK" : confianza > 60 ? "Revisar" : "Rehacer";
-    let comentario = etiqueta.includes("normal") || etiqueta.includes("benign") ? "Aspecto compatible con tejido normal/benigno." : "Hallazgos sugerentes de proceso patológico.";
-
     return {
-      status: nivel,
-      hallazgos: `IA real (Hugging Face)\nConfianza: ${confianza}%\nEtiqueta: ${top.label}\n${comentario}`,
-      educativo: comentario,
-      disclaimer: "Resultado preliminar de IA – requiere confirmación histopatológica."
+      status: top.score > 0.85 ? "OK" : "Revisar",
+      hallazgos: `IA REAL (Hugging Face)\nConfianza: ${Math.round(top.score*100)}%\nEtiqueta detectada: ${top.label}`,
+      educativo: "Resultado preliminar – requiere confirmación histopatológica.",
+      disclaimer: "¡Clave personal activa!"
     };
   }
 
-  // ─────── UI + LÓGICA ───────
+  // UI
   function initUI() {
     const c = document.getElementById("ia");
-    if (!c || c.querySelector("#aiProUI")) return;
+    if (!c || c.querySelector("#aiFinalUI")) return;
 
     c.innerHTML = `
-      <div class="card" id="aiProUI">
+      <div class="card" id="aiFinalUI">
         <h2>Analizador IA</h2>
-        <p>Sube o fotografía el corte histológico</p>
 
         <div style="text-align:center; margin:1.5rem 0;">
-          <strong>Modo análisis:</strong><br>
+          <strong>Modo activo:</strong><br>
           <button id="localBtn" class="modoBtn active">Local (offline)</button>
           <button id="hfBtn" class="modoBtn">Hugging Face (IA real)</button>
+        </div>
+
+        <div id="claveDiv" style="display:none; margin:1rem 0;">
+          <input type="password" id="hfInput" placeholder="Pega aquí tu clave hf_..." style="width:100%; padding:1rem;">
+          <button id="saveKeyBtn" style="margin-top:0.5rem;">Activar IA real</button>
+          <button id="removeKeyBtn" style="margin-left:0.5rem; background:#dc2626;">Quitar clave</button>
         </div>
 
         <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
@@ -92,27 +89,42 @@
       </div>
     `;
 
+    // Toggle
     $("#localBtn").onclick = () => { modoIA = "local"; actualizar(); };
     $("#hfBtn").onclick = () => {
-      if (HF_TOKEN === "PEGA_TU_CLAVE_AQUÍ") {
-        alert("Primero pega tu clave Hugging Face en ai.js y vuelve a subir.");
-        return;
-      }
-      if (!dentroDeDemo()) {
-        alert("Demo IA real terminada. Volviendo a modo local.");
-        modoIA = "local";
-      } else modoIA = "hugging";
+      $("#claveDiv").style.display = "block";
+      if (localStorage.getItem(KEY_HF_TOKEN)) modoIA = "hugging";
+      actualizar();
+    };
+
+    $("#saveKeyBtn").onclick = () => {
+      const clave = $("#hfInput").value.trim();
+      if (clave && clave.startsWith("hf_")) {
+        localStorage.setItem(KEY_HF_TOKEN, clave);
+        modoIA = "hugging";
+        alert("¡IA real activada solo para ti!");
+      } else alert("Clave inválida");
+      actualizar();
+    };
+
+    $("#removeKeyBtn").onclick = () => {
+      localStorage.removeItem(KEY_HF_TOKEN);
+      modoIA = "local";
+      $("#claveDiv").style.display = "none";
+      alert("IA real desactivada – modo local activo");
       actualizar();
     };
 
     function actualizar() {
+      const tieneClave = !!localStorage.getItem(KEY_HF_TOKEN);
       $("#localBtn").classList.toggle("active", modoIA === "local");
       $("#hfBtn").classList.toggle("active", modoIA === "hugging");
+      $("#claveDiv").style.display = tieneClave || modoIA === "hugging" ? "block" : "none";
     }
 
+    // Uploads y análisis (igual que antes)
     $("#uploadBtn").onclick = () => $("#fileInput").click();
     $("#camBtn").onclick = () => $("#camInput").click();
-
     ["#fileInput", "#camInput"].forEach(id => $(id).onchange = e => {
       if (e.target.files[0]) { lastFile = e.target.files[0]; $("#analyzeBtn").disabled = false; }
     });
@@ -120,14 +132,14 @@
     $("#analyzeBtn").onclick = async () => {
       if (!lastFile) return;
       $("#analyzeBtn").disabled = true;
-      $("#analyzeBtn").textContent = modoIA === "hugging" ? "Analizando con IA real..." : "Analizando...";
+      $("#analyzeBtn").textContent = "Analizando...";
 
       const muestra = JSON.parse(localStorage.getItem(KEY_MUESTRA) || "{}");
-      const result = modoIA === "hugging" ? await analizarHugging(lastFile, muestra.organo) : analizarLocal(muestra.organo);
+      const result = modoIA === "hugging" ? await analizarHugging(lastFile) : analizarLocal(muestra.organo);
 
       $("#result").innerHTML = `
         <div style="padding:1rem; border-radius:12px; background:#f0fdf4; border:2px solid #10b981;">
-          <h4 style="color:#10b981; margin:0 0 0.5rem;">${result.status}</h4>
+          <h4 style="color:#10b981;">${result.status}</h4>
           <p style="white-space:pre-line;">${result.hallazgos}</p>
           <p style="font-size:0.9rem; color:#059669;"><strong>Educativo:</strong> ${result.educativo}</p>
           <p style="font-size:0.8rem; color:#dc2626;"><em>${result.disclaimer}</em></p>
@@ -137,23 +149,8 @@
       $("#analyzeBtn").textContent = "Analizar";
       $("#analyzeBtn").disabled = false;
     };
-  }
 
-  // Demo automática la primera vez
-  if (!localStorage.getItem(KEY_DEMO_START) && HF_TOKEN !== "PEGA_TU_CLAVE_AQUÍ") {
-    setTimeout(() => {
-      if (confirm(`¿Activar IA real ${DEMO_DIAS} días gratis?\nDespués vuelve al modo local.`)) {
-        localStorage.setItem(KEY_DEMO_START, new Date().toISOString());
-        alert("Demo activada – recarga la página");
-      }
-    }, 1500);
-  }
-
-  function dentroDeDemo() {
-    const inicio = localStorage.getItem(KEY_DEMO_START);
-    if (!inicio) return false;
-    const dias = (Date.now() - new Date(inicio)) / (1000*60*60*24);
-    return dias <= DEMO_DIAS;
+    actualizar();
   }
 
   initUI();
