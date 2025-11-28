@@ -48,7 +48,7 @@
     form.append("inputs", file);
 
     try {
-      const res = await fetch("https://api-inference.huggingface.co/models/microsoft/swin-tiny-patch4-window7-224", {
+      const res = await fetch("https://api-inference.huggingface.co/models/owkin/phikon-vit-b-histopathology", {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: form
@@ -168,3 +168,4 @@
   initUI();
   console.log("AI FINAL 2025 – todo OK");
 })();
+
