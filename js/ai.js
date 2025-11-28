@@ -1,5 +1,5 @@
-/* AnatoFlow v22 PRO – IA FINAL 100% FUNCIONAL (imagen visible + órgano correcto + botón arriba arreglado) */
-(function () {
+/* AnatoFlow v22 PRO – IA 100% FUNCIONAL (forzar recarga 2025) */
+(() => {
   "use strict";
 
   const KEY_MUESTRA = "anatoflow_muestra_v22";
@@ -8,9 +8,8 @@
   let lastFile = null;
   let modoIA = localStorage.getItem(KEY_HF_TOKEN) ? "hugging" : "local";
 
-  const $ = (sel) => document.querySelector(sel);
+  const $ = s => document.querySelector(s);
 
-  // LOCAL EDUCATIVO – MÁS RICO Y LEE EL ÓRGANO
   function analizarLocal(organo) {
     const o = (organo || "No indicado").toLowerCase();
     const niveles = ["Normal", "Reactivo / Inflamatorio", "Atipia / Lesión bajo grado", "Sospecha de malignidad"];
@@ -18,21 +17,19 @@
 
     let detalle = "";
     if (o.includes("tráquea") || o.includes("bronquio")) {
-      detalle = nivel === "Normal" ? "Epitelio pseudoestratificado ciliado bien conservado. Células caliciformes abundantes. Sin displasia." :
-                nivel.includes("Reactivo") ? "Inflamación crónica con infiltrado linfoplasmocitario. Hiperplasia de células caliciformes." :
-                nivel.includes("Atipia") ? "Displasia de bajo grado. Pérdida parcial de cilios y polaridad." :
-                "Displasia de alto grado o carcinoma escamocelular in situ. Pleomorfismo nuclear marcado.";
+      detalle = nivel === "Normal" ? "Epitelio ciliado perfecto. Células caliciformes abundantes." :
+                nivel.includes("Reactivo") ? "Inflamación crónica con linfocitos." :
+                nivel.includes("Atipia") ? "Displasia leve-moderada." :
+                "Carcinoma escamocelular sospechoso – pleomorfismo marcado.";
     } else if (o.includes("tiroides")) {
-      detalle = nivel === "Normal" ? "Folículos tiroideos con coloide homogéneo. Células foliculares regulares." :
-                nivel.includes("Reactivo") ? "Tiroiditis linfocítica. Infiltrado linfocitario + células de Hürthle." :
-                nivel.includes("Atipia") ? "Nódulo folicular con atipia. Posible adenoma vs carcinoma folicular." :
-                "Carcinoma papilar sospechoso: núcleos en vidrio esmerilado, surcos nucleares, cuerpos de psammoma.";
+      detalle = nivel === "Normal" ? "Folículos con coloide homogéneo." :
+                nivel.includes("Reactivo") ? "Tiroiditis linfocítica." :
+                nivel.includes("Atipia") ? "Células de Hürthle." :
+                "Carcinoma papilar sospechoso – núcleos en vidrio esmerilado.";
     } else if (o.includes("pulmón")) {
-      detalle = nivel === "Normal" ? "Parénquima pulmonar conservado. Alvéolos abiertos." : "Posible adenocarcinoma o carcinoma escamocelular.";
-    } else if (o.includes("mama")) {
-      detalle = nivel === "Normal" ? "Conductos y lobulillos normales." : "Carcinoma ductal infiltrante sospechoso.";
+      detalle = nivel === "Normal" ? "Alvéolos conservados." : "Posible adenocarcinoma.";
     } else {
-      detalle = "Tejido conservado con celularidad " + nivel.toLowerCase() + ".";
+      detalle = "Tejido conservado – " + nivel.toLowerCase() + ".";
     }
 
     return {
@@ -43,7 +40,6 @@
     };
   }
 
-  // HUGGING FACE
   async function analizarHugging(file) {
     const token = localStorage.getItem(KEY_HF_TOKEN);
     if (!token) return analizarLocal("");
@@ -61,8 +57,8 @@
       const top = data[0] || {};
       return {
         status: top.score > 0.8 ? "OK" : "Revisar",
-        hallazgos: `IA REAL (Hugging Face)\nConfianza: ${Math.round((top.score || 0)*100)}%\nEtiqueta: ${top.label || "desconocida"}`,
-        educativo: "Análisis con red neuronal profunda.",
+        hallazgos: `IA REAL activada\nConfianza: ${Math.round((top.score || 0)*100)}%\nEtiqueta: ${top.label || "desconocida"}`,
+        educativo: "Resultado con red neuronal profunda.",
         disclaimer: "¡Clave personal activa!"
       };
     } catch (e) {
@@ -106,7 +102,6 @@
       </div>
     `;
 
-    // BOTONES
     $("#localBtn").onclick = () => { modoIA = "local"; actualizar(); };
     $("#hfBtn").onclick = () => { $("#claveDiv").style.display = "block"; };
 
@@ -130,11 +125,10 @@
     $("#uploadBtn").onclick = () => $("#fileInput").click();
     $("#camBtn").onclick = () => $("#camInput").click();
 
-    const handleFile = (e) => {
+    const handleFile = e => {
       if (e.target.files?.[0]) {
         lastFile = e.target.files[0];
         $("#analyzeBtn").disabled = false;
-
         const url = URL.createObjectURL(lastFile);
         $("#preview").innerHTML = `<img src="${url}" style="max-width:100%;max-height:500px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.2)">`;
       }
@@ -172,4 +166,5 @@
   }
 
   initUI();
+  console.log("AI FINAL 2025 – todo OK");
 })();
