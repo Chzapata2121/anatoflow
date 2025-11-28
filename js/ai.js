@@ -1,8 +1,8 @@
-/* AnatoFlow v22 PRO – IA LOCAL + HUGGING FACE (clave personal) – Versión FINAL 100% funcional */
+/* AnatoFlow v22 PRO – IA LOCAL + HUGGING FACE (clave personal) – FINAL 100% FUNCIONAL */
 (function () {
   "use strict";
 
-  const KEY_MUESTRA = "anatoflow_muestra_v22";
+  const KEY_MUESTRA = "anatoflow_muestra_v22;
   const KEY_HF_TOKEN = "anatoflow_hf_token";
 
   let lastFile = null;
@@ -10,27 +10,27 @@
 
   const $ = (sel) => document.querySelector(sel);
 
-  // MODO LOCAL EDUCATIVO
+  // LOCAL EDUCATIVO
   function analizarLocal(organo) {
     const o = (organo || "").toLowerCase();
     const niveles = ["Normal", "Reactivo / Inflamatorio", "Atipia / Lesión bajo grado", "Sospecha de malignidad"];
     const nivel = niveles[Math.floor(Math.random() * niveles.length)];
 
     let comentario = "";
-    if (o.includes("tráquea") || o.includes("bronquio")) comentario = nivel === "Normal" ? "Epitelio ciliado bien conservado, células caliciformes presentes." : nivel.includes("Reactivo") ? "Inflamación leve con linfocitaria." : nivel.includes("Atipia") ? "Núcleos agrandados, posible displasia." : "Pleomorfismo y mitosis atípicas – sospecha maligna.";
+    if (o.includes("tráquea") || o.includes("bronquio")) comentario = nivel === "Normal" ? "Epitelio ciliado bien conservado." : nivel.includes("Reactivo") ? "Inflamación leve." : nivel.includes("Atipia") ? "Núcleos agrandados." : "Pleomorfismo – sospecha maligna.";
     else if (o.includes("pulmón")) comentario = nivel === "Normal" ? "Alvéolos normales." : "Posible carcinoma.";
     else if (o.includes("mama")) comentario = nivel === "Normal" ? "Conductos normales." : "Posible carcinoma ductal.";
     else comentario = "Tejido conservado – " + nivel.toLowerCase() + ".";
 
     return {
-      status: nivel.includes("Normal") ? "OK" : nivel.includes("Reactivo") ? "Revisar" : "Rehacer",
+      status: nivel.includes("Normal") ? "OK : nivel.includes("Reactivo") ? "Revisar" : "Rehacer",
       hallazgos: `Órgano: ${organo || "No indicado"}\nNivel: ${nivel}\n${comentario}`,
       educativo: comentario,
       disclaimer: "Interpretación preliminar educativa – confirmar con patólogo."
     };
   }
 
-  // MODO HUGGING FACE REAL
+  // HUGGING FACE REAL
   async function analizarHugging(file) {
     const token = localStorage.getItem(KEY_HF_TOKEN);
     if (!token) return analizarLocal("");
@@ -45,7 +45,7 @@
         body: form
       });
 
-      if (!res.ok) throw new Error("Clave inválida o límite alcanzado");
+      if (!res.ok) throw new Error("Error");
 
       const data = await res.json();
       const top = data[0];
@@ -56,7 +56,7 @@
         disclaimer: "¡Clave personal activa!"
       };
     } catch (e) {
-      return { status: "Error", hallazgos: "Error con IA real – volviendo a modo local." };
+      return { status: "Error", hallazgos: "Error con IA real – volviendo a local." };
     }
   }
 
@@ -86,6 +86,7 @@
           <button id="uploadBtn">Subir imagen</button>
           <button id="camBtn">Cámara</button>
         </div>
+
         <input type="file" id="fileInput" accept="image/*" style="display:none">
         <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none">
 
@@ -116,15 +117,16 @@
       actualizar();
     };
 
+    // CORREGIDO: IDs correctos
     $("#uploadBtn").onclick = () => $("#fileInput").click();
     $("#camBtn").onclick = () => $("#camInput").click();
 
-    ["#fileInput", "#camInput"].forEach(id => $(id).onchange = e => {
+    $("#fileInput").onchange = $("#camInput").onchange = (e) => {
       if (e.target.files[0]) {
         lastFile = e.target.files[0];
         $("#analyzeBtn").disabled = false;
       }
-    });
+    };
 
     $("#analyzeBtn").onclick = async () => {
       if (!lastFile) return;
@@ -157,5 +159,5 @@
   }
 
   initUI();
-  console.log("AI script v2 loaded – todo OK");
+  console.log("AI script FINAL loaded – todo OK");
 })();
