@@ -2,8 +2,8 @@
   "name": "AnatoFlow v22 PRO",
   "short_name": "AnatoFlow",
   "description": "Asistente digital para Técnicos de Anatomía Patológica",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "background_color": "#f5f6fa",
   "theme_color": "#1e40af",
@@ -22,4 +22,5 @@
       "purpose": "maskable any"
     }
   ]
+
 }
