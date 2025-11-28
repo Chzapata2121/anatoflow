@@ -1,4 +1,4 @@
-/* AnatoFlow v22 PRO – IA FINAL 100% FUNCIONAL (imagen visible + órgano correcto + análisis rico) */
+/* AnatoFlow v22 PRO – IA FINAL 100% FUNCIONAL (imagen visible + órgano correcto + botón arriba arreglado) */
 (function () {
   "use strict";
 
@@ -10,7 +10,7 @@
 
   const $ = (sel) => document.querySelector(sel);
 
-  // LOCAL EDUCATIVO – AHORA SÍ LEE EL ÓRGANO GUARDADO
+  // LOCAL EDUCATIVO – MÁS RICO Y LEE EL ÓRGANO
   function analizarLocal(organo) {
     const o = (organo || "No indicado").toLowerCase();
     const niveles = ["Normal", "Reactivo / Inflamatorio", "Atipia / Lesión bajo grado", "Sospecha de malignidad"];
@@ -18,25 +18,19 @@
 
     let detalle = "";
     if (o.includes("tráquea") || o.includes("bronquio")) {
-      detalle = nivel === "Normal" 
-        ? "Epitelio pseudoestratificado ciliado bien conservado. Células caliciformes abundantes. Sin displasia." 
-        : nivel.includes("Reactivo") 
-        ? "Inflamación crónica con infiltrado linfoplasmocitario. Hiperplasia de células caliciformes." 
-        : nivel.includes("Atipia") 
-        ? "Displasia de bajo grado. Pérdida parcial de cilios y polaridad." 
-        : "Displasia de alto grado o carcinoma escamocelular in situ. Pleomorfismo nuclear marcado.";
+      detalle = nivel === "Normal" ? "Epitelio pseudoestratificado ciliado bien conservado. Células caliciformes abundantes. Sin displasia." :
+                nivel.includes("Reactivo") ? "Inflamación crónica con infiltrado linfoplasmocitario. Hiperplasia de células caliciformes." :
+                nivel.includes("Atipia") ? "Displasia de bajo grado. Pérdida parcial de cilios y polaridad." :
+                "Displasia de alto grado o carcinoma escamocelular in situ. Pleomorfismo nuclear marcado.";
     } else if (o.includes("tiroides")) {
-      detalle = nivel === "Normal" 
-        ? "Folículos tiroideos con coloide homogéneo. Células foliculares cúbicas regulares." 
-        : nivel.includes("Reactivo") 
-        ? "Tiroiditis linfocítica (Hashimoto). Infiltrado linfocitario + células de Hürthle." 
-        : nivel.includes("Atipia") 
-        ? "Nódulo folicular con atipia. Posible adenoma vs carcinoma folicular." 
-        : "Carcinoma papilar sospechoso: núcleos en vidrio esmerilado, surcos nucleares, cuerpos de psammoma.";
+      detalle = nivel === "Normal" ? "Folículos tiroideos con coloide homogéneo. Células foliculares regulares." :
+                nivel.includes("Reactivo") ? "Tiroiditis linfocítica. Infiltrado linfocitario + células de Hürthle." :
+                nivel.includes("Atipia") ? "Nódulo folicular con atipia. Posible adenoma vs carcinoma folicular." :
+                "Carcinoma papilar sospechoso: núcleos en vidrio esmerilado, surcos nucleares, cuerpos de psammoma.";
     } else if (o.includes("pulmón")) {
       detalle = nivel === "Normal" ? "Parénquima pulmonar conservado. Alvéolos abiertos." : "Posible adenocarcinoma o carcinoma escamocelular.";
     } else if (o.includes("mama")) {
-      detalle = nivel === "Normal" ? "Conductos y lobulillos mamarios normales." : "Carcinoma ductal infiltrante sospechoso.";
+      detalle = nivel === "Normal" ? "Conductos y lobulillos normales." : "Carcinoma ductal infiltrante sospechoso.";
     } else {
       detalle = "Tejido conservado con celularidad " + nivel.toLowerCase() + ".";
     }
@@ -45,10 +39,11 @@
       status: nivel.includes("Normal") ? "OK" : nivel.includes("Reactivo") ? "Revisar" : "Rehacer",
       hallazgos: `ÓRGANO: ${organo}\nNIVEL: ${nivel}\n\n${detalle}`,
       educativo: detalle,
-      disclaimer: "Interpretación preliminar educativa – requiere confirmación histopatológica por patólogo."
+      disclaimer: "Interpretación preliminar educativa – confirmar con patólogo."
     };
   }
 
+  // HUGGING FACE
   async function analizarHugging(file) {
     const token = localStorage.getItem(KEY_HF_TOKEN);
     if (!token) return analizarLocal("");
@@ -66,12 +61,12 @@
       const top = data[0] || {};
       return {
         status: top.score > 0.8 ? "OK" : "Revisar",
-        hallazgos: `IA REAL (Hugging Face)\nConfianza: ${Math.round((top.score || 0)*100)}%\nClasificación: ${top.label || "desconocida"}\n\nAnálisis avanzado con red neuronal profunda.`,
-        educativo: "Resultado preliminar – requiere confirmación.",
+        hallazgos: `IA REAL (Hugging Face)\nConfianza: ${Math.round((top.score || 0)*100)}%\nEtiqueta: ${top.label || "desconocida"}`,
+        educativo: "Análisis con red neuronal profunda.",
         disclaimer: "¡Clave personal activa!"
       };
     } catch (e) {
-      return { status: "Error", hallazgos: "Error con IA real – modo local activo." };
+      return { status: "Error", hallazgos: "Error IA real – modo local activo." };
     }
   }
 
@@ -85,7 +80,7 @@
         <p>Sube o fotografía el corte histológico</p>
 
         <div style="text-align:center;margin:1.5rem 0">
-          <strong>Modo activo:</strong><br>
+          <strong>Modo:</strong><br>
           <button id="localBtn" class="modoBtn active">Local (offline)</button>
           <button id="hfBtn" class="modoBtn">Hugging Face (IA real)</button>
         </div>
@@ -111,6 +106,7 @@
       </div>
     `;
 
+    // BOTONES
     $("#localBtn").onclick = () => { modoIA = "local"; actualizar(); };
     $("#hfBtn").onclick = () => { $("#claveDiv").style.display = "block"; };
 
@@ -139,3 +135,41 @@
         lastFile = e.target.files[0];
         $("#analyzeBtn").disabled = false;
 
+        const url = URL.createObjectURL(lastFile);
+        $("#preview").innerHTML = `<img src="${url}" style="max-width:100%;max-height:500px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.2)">`;
+      }
+    };
+    $("#fileInput").onchange = handleFile;
+    $("#camInput").onchange = handleFile;
+
+    $("#analyzeBtn").onclick = async () => {
+      if (!lastFile) return;
+      $("#analyzeBtn").disabled = true;
+      $("#analyzeBtn").textContent = "Analizando...";
+
+      const muestra = JSON.parse(localStorage.getItem(KEY_MUESTRA) || "{}");
+      const result = modoIA === "hugging" ? await analizarHugging(lastFile) : analizarLocal(muestra.organo);
+
+      $("#result").innerHTML = `
+        <div style="padding:1.5rem;border-radius:12px;background:#f0fdf4;border:2px solid #10b981">
+          <h3 style="color:#10b981">${result.status}</h3>
+          <p style="white-space:pre-line;font-weight:600">${result.hallazgos}</p>
+          <p style="margin:1rem 0 0;color:#059669"><strong>Educativo:</strong> ${result.educativo}</p>
+          <p style="font-size:0.9rem;color:#dc2626;margin-top:1rem"><em>${result.disclaimer}</em></p>
+        </div>
+      `;
+
+      $("#analyzeBtn").textContent = "Analizar";
+      $("#analyzeBtn").disabled = false;
+    };
+
+    function actualizar() {
+      const tiene = !!localStorage.getItem(KEY_HF_TOKEN);
+      $("#localBtn").classList.toggle("active", modoIA === "local");
+      $("#hfBtn").classList.toggle("active", modoIA === "hugging");
+    }
+    actualizar();
+  }
+
+  initUI();
+})();
