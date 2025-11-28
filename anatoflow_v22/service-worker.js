@@ -3,17 +3,17 @@ const CACHE_NAME = "anatoflow-v22-cache";
 
 // Archivos a cachear
 const APP_SHELL = [
-  "/",
-  "/index.html",
-  "/manifest.json",
-  "/assets/icon-192.png",
-  "/assets/icon-512.png",
-  "/js/ui.js",
-  "/js/protocols.js",
-  "/js/timer.js",
-  "/js/inventory.js",
-  "/js/ai.js",
-  "/js/report.js"
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./assets/icon-192.png",
+  "./assets/icon-512.png",
+  "./js/ui.js",
+  "./js/protocols.js",
+  "./js/timer.js",
+  "./js/inventory.js",
+  "./js/ai.js",
+  "./js/report.js"
 ];
 
 // INSTALACIÓN DEL SW
@@ -51,3 +51,4 @@ self.addEventListener("fetch", event => {
     })
   );
 });
+
