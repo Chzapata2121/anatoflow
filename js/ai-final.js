@@ -1,129 +1,93 @@
-/* AnatoFlow v22 PRO – IA (Local + Real vía Worker) – GitHub Pages OK */
+/* AnatoFlow v22 PRO – IA (Worker) + Local fallback – ai.js */
 (() => {
   "use strict";
 
   const KEY_MUESTRA = "anatoflow_muestra_v22";
-  const KEY_AI_RESULT = "anatoflow_ai_result_v22";
 
-  // Pega aquí tu URL real del Worker:
+  // PON AQUÍ TU URL REAL DEL WORKER (Cloudflare)
   const WORKER_URL = "https://little-limit-7cbb.cchhee-18.workers.dev";
 
   let lastFile = null;
-  let modoIA = "local"; // "local" | "real"
+  let modoIA = "local"; // "local" | "worker"
 
-  const $ = (s) => document.querySelector(s);
-
-  function getMuestra() {
-    try {
-      return JSON.parse(localStorage.getItem(KEY_MUESTRA) || "{}") || {};
-    } catch {
-      return {};
-    }
-  }
-
-  function colorPorStatus(status) {
-    const s = (status || "").toLowerCase();
-    if (s.includes("ok")) return { bg: "#f0fdf4", border: "#10b981", text: "#065f46" };     // verde
-    if (s.includes("revis")) return { bg: "#fffbeb", border: "#f59e0b", text: "#92400e" };  // ámbar
-    if (s.includes("rehac")) return { bg: "#fef2f2", border: "#ef4444", text: "#991b1b" };  // rojo
-    if (s.includes("error")) return { bg: "#f1f5f9", border: "#64748b", text: "#0f172a" };  // gris
-    return { bg: "#f8fafc", border: "#94a3b8", text: "#0f172a" };
-  }
+  const $ = s => document.querySelector(s);
 
   function analizarLocal(organo) {
     const o = (organo || "No indicado").toLowerCase();
-
-    const niveles = [
-      "Normal",
-      "Reactivo / Inflamatorio",
-      "Atipia / Lesión bajo grado",
-      "Sospecha de malignidad",
-    ];
+    const niveles = ["Normal", "Reactivo / Inflamatorio", "Atipia / Lesión bajo grado", "Sospecha de malignidad"];
     const nivel = niveles[Math.floor(Math.random() * niveles.length)];
 
     let detalle = "";
-    if (o.includes("traquea") || o.includes("tráquea") || o.includes("bronquio")) {
-      detalle =
-        nivel === "Normal"
-          ? "Epitelio cilíndrico pseudoestratificado ciliado conservado. Células caliciformes presentes."
-          : nivel.includes("Reactivo")
-            ? "Cambios inflamatorios/reactivos compatibles con irritación o infección."
-            : nivel.includes("Atipia")
-              ? "Cambios displásicos leves: revisar correlación clínica y repetir si procede."
-              : "Hallazgos sospechosos: considerar revisión por patólogo y repetir técnica si la calidad es pobre.";
+    if (o.includes("tráquea") || o.includes("traquea") || o.includes("bronquio")) {
+      detalle = nivel === "Normal"
+        ? "Epitelio respiratorio ciliado conservado; células caliciformes presentes."
+        : nivel.includes("Reactivo")
+          ? "Cambios reactivos con inflamación; valorar artefactos de tinción."
+          : nivel.includes("Atipia")
+            ? "Atipia leve/displasia: correlacionar con clínica y calidad de muestra."
+            : "Hallazgos sugerentes: requiere confirmación por patólogo.";
     } else if (o.includes("tiroides")) {
-      detalle =
-        nivel === "Normal"
-          ? "Folículos bien delimitados con coloide homogéneo. Celularidad folicular dentro de lo esperado."
-          : nivel.includes("Reactivo")
-            ? "Patrón compatible con tiroiditis/hiperplasia: correlacionar con clínica."
-            : nivel.includes("Atipia")
-              ? "Atipia leve / células oncocíticas (Hürthle) posibles: revisar extendido y repetir si hay dudas."
-              : "Hallazgos sospechosos: reconsiderar técnica y solicitar segunda lectura.";
-    } else if (o.includes("pulmon") || o.includes("pulmón")) {
-      detalle =
-        nivel === "Normal"
-          ? "Arquitectura alveolar conservada sin artefactos mayores."
-          : "Alteraciones inespecíficas: revisar calidad técnica y correlacionar con la muestra.";
+      detalle = nivel === "Normal"
+        ? "Folículos tiroideos con coloide homogéneo; celularidad acorde."
+        : nivel.includes("Reactivo")
+          ? "Cambios inflamatorios/tiroiditis; valorar fondo y sangre."
+          : nivel.includes("Atipia")
+            ? "Cambios oncocíticos/atipia: revisar preparación."
+            : "Patrón sospechoso: requiere confirmación por patólogo.";
+    } else if (o.includes("pulmón") || o.includes("pulmon")) {
+      detalle = nivel === "Normal" ? "Arquitectura alveolar conservada." : "Cambios no específicos; revisar enfoque y tinción.";
     } else {
-      detalle = "Tejido conservado – " + nivel.toLowerCase() + ".";
+      detalle = "Evaluación educativa por modo local (sin IA remota).";
     }
 
     return {
       status: nivel.includes("Normal") ? "OK" : nivel.includes("Reactivo") ? "Revisar" : "Rehacer",
-      hallazgos: `MODO LOCAL (simulado)\nÓrgano: ${organo || "-"}\nNivel: ${nivel}\n\n${detalle}`,
+      hallazgos: `ÓRGANO: ${organo || "No indicado"}\nNIVEL: ${nivel}\n\n${detalle}`,
       educativo: detalle,
-      disclaimer: "Educativo. No constituye diagnóstico. Confirmar con patólogo y correlación clínica.",
-      meta: { mode: "local" },
+      disclaimer: "Resultado educativo/preliminar. No es diagnóstico."
     };
   }
 
-  async function analizarIAReal(file) {
+  async function analizarWorker(file) {
     try {
       const body = await file.arrayBuffer();
 
       const res = await fetch(WORKER_URL, {
         method: "POST",
         headers: { "Content-Type": file.type || "application/octet-stream" },
-        body,
+        body
       });
 
       if (!res.ok) {
         const txt = await res.text().catch(() => "");
-        throw new Error(`Worker/HF HTTP ${res.status}: ${txt}`.slice(0, 350));
+        throw new Error(`Worker/HF HTTP ${res.status}: ${txt}`.slice(0, 240));
       }
 
-      const data = await res.json();
+      const data = await res.json().catch(() => null);
 
-      // HF típicamente devuelve: [{label, score}, ...]
-      // También puede devolver: { error: "..."} o similares.
-      if (data && typeof data === "object" && !Array.isArray(data) && data.error) {
-        throw new Error(String(data.error));
-      }
+      // HF puede devolver array [{label, score}, ...] o un objeto con error
+      if (!data) throw new Error("Respuesta vacía");
+      if (data.error) throw new Error(String(data.error));
 
       const top = Array.isArray(data) ? (data[0] || {}) : (data?.[0] || data || {});
-      const label = top.label || "desconocida";
       const score = Number(top.score ?? 0);
-
-      // Semáforo simple por confianza del modelo (ajustable)
-      const status = score >= 0.85 ? "OK" : score >= 0.60 ? "Revisar" : "Rehacer";
+      const label = top.label || "desconocida";
 
       return {
-        status,
-        hallazgos: `IA REAL (Hugging Face vía Worker)\nConfianza: ${Math.round(score * 100)}%\nEtiqueta: ${label}`,
-        educativo:
-          "Salida automatizada del modelo (clasificación/score). Úsese como apoyo a control de calidad, no como diagnóstico.",
-        disclaimer:
-          "La IA puede fallar por calidad de imagen, tinción, enfoque o variabilidad tisular. Verificar siempre por criterios morfológicos.",
-        meta: { mode: "real", label, score },
+        status: score >= 0.8 ? "OK" : score >= 0.5 ? "Revisar" : "Rehacer",
+        hallazgos:
+          `IA REAL (Worker)\n` +
+          `Etiqueta: ${label}\n` +
+          `Confianza: ${Math.round(score * 100)}%`,
+        educativo: "Inferencia automática en servidor (token protegido).",
+        disclaimer: "Resultado preliminar. Confirmar por patólogo."
       };
     } catch (e) {
       return {
         status: "Error",
         hallazgos: `Error IA real – modo local activo.\n${String(e?.message || e)}`,
         educativo: "No se pudo ejecutar la IA remota. Reintente o use modo local.",
-        disclaimer: "Si persiste: revisar Worker, token HF, estado del modelo y conexión.",
-        meta: { mode: "real_error" },
+        disclaimer: "Si persiste: revisar Worker, token HF y disponibilidad del modelo."
       };
     }
   }
@@ -135,14 +99,15 @@
     c.innerHTML = `
       <div class="card" id="aiOK">
         <h2>Analizador IA</h2>
-        <p>Sube una imagen o toma una foto desde el microscopio. El modo IA real usa un proxy (Worker) para evitar CORS.</p>
+        <p>Sube una imagen o toma una foto desde el microscopio.</p>
 
-        <div style="text-align:center;margin:1.25rem 0">
-          <strong>Modo</strong><br>
-          <div style="display:flex;gap:.75rem;justify-content:center;margin-top:.75rem;flex-wrap:wrap">
+        <div style="text-align:center;margin:1rem 0">
+          <div style="font-weight:700;margin-bottom:.6rem">Modo</div>
+          <div style="display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap">
             <button id="localBtn" class="modoBtn active">Local (offline)</button>
-            <button id="realBtn" class="modoBtn">IA real (Worker)</button>
+            <button id="workerBtn" class="modoBtn">IA real (Worker)</button>
           </div>
+          <div id="modoBadge" style="margin-top:.75rem;font-size:.95rem;opacity:.9"></div>
         </div>
 
         <div style="display:flex;gap:1rem;justify-content:center;margin:1rem 0;flex-wrap:wrap">
@@ -160,32 +125,31 @@
       </div>
     `;
 
-    function actualizar() {
-      $("#localBtn").classList.toggle("active", modoIA === "local");
-      $("#realBtn").classList.toggle("active", modoIA === "real");
-    }
-
-    $("#localBtn").onclick = () => {
-      modoIA = "local";
-      actualizar();
+    const setModo = (m) => {
+      modoIA = m;
+      $("#localBtn")?.classList.toggle("active", modoIA === "local");
+      $("#workerBtn")?.classList.toggle("active", modoIA === "worker");
+      $("#modoBadge").textContent = `Modo activo: ${modoIA === "worker" ? "IA real (Worker)" : "Local (offline)"}`;
     };
 
-    $("#realBtn").onclick = () => {
-      modoIA = "real";
-      actualizar();
-    };
+    $("#localBtn").onclick = () => setModo("local");
+    $("#workerBtn").onclick = () => setModo("worker");
 
     $("#uploadBtn").onclick = () => $("#fileInput").click();
     $("#camBtn").onclick = () => $("#camInput").click();
 
-    const handleFile = (e) => {
+    const handleFile = e => {
       if (e.target.files?.[0]) {
         lastFile = e.target.files[0];
         $("#analyzeBtn").disabled = false;
+
         const url = URL.createObjectURL(lastFile);
-        $("#preview").innerHTML = `<img src="${url}" style="max-width:100%;max-height:500px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.2)">`;
+        $("#preview").innerHTML = `
+          <img src="${url}" style="max-width:100%;max-height:500px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.2)">
+        `;
       }
     };
+
     $("#fileInput").onchange = handleFile;
     $("#camInput").onchange = handleFile;
 
@@ -193,47 +157,33 @@
       if (!lastFile) return;
 
       $("#analyzeBtn").disabled = true;
-      const prevText = $("#analyzeBtn").textContent;
       $("#analyzeBtn").textContent = "Analizando...";
 
-      const muestra = getMuestra();
-      const result =
-        modoIA === "real" ? await analizarIAReal(lastFile) : analizarLocal(muestra.organo);
+      const muestra = JSON.parse(localStorage.getItem(KEY_MUESTRA) || "{}");
+      const result = (modoIA === "worker")
+        ? await analizarWorker(lastFile)
+        : analizarLocal(muestra.organo);
 
-      // Guardar para auditoría/informe
-      try {
-        localStorage.setItem(
-          KEY_AI_RESULT,
-          JSON.stringify({
-            ts: new Date().toISOString(),
-            mode: modoIA,
-            organo: muestra.organo || "",
-            status: result.status,
-            hallazgos: result.hallazgos,
-            educativo: result.educativo,
-            meta: result.meta || {},
-          })
-        );
-      } catch {}
-
-      const theme = colorPorStatus(result.status);
+      const isOk = result.status === "OK";
+      const isWarn = result.status === "Revisar";
+      const border = isOk ? "#10b981" : isWarn ? "#f59e0b" : "#ef4444";
+      const bg = isOk ? "#f0fdf4" : isWarn ? "#fffbeb" : "#fef2f2";
 
       $("#result").innerHTML = `
-        <div style="padding:1.25rem;border-radius:12px;background:${theme.bg};border:2px solid ${theme.border}">
-          <h3 style="margin:.25rem 0;color:${theme.text}">${result.status}</h3>
-          <p style="white-space:pre-line;font-weight:600;margin:.75rem 0;color:${theme.text}">${result.hallazgos}</p>
-          <p style="margin:0;color:${theme.text}"><strong>Educativo:</strong> ${result.educativo || "—"}</p>
-          <p style="font-size:0.9rem;color:#6b7280;margin-top:1rem"><em>${result.disclaimer || ""}</em></p>
+        <div style="padding:1.25rem;border-radius:12px;background:${bg};border:2px solid ${border}">
+          <h3 style="margin-top:0;color:${border}">${result.status}</h3>
+          <p style="white-space:pre-line;font-weight:600;margin-bottom:.75rem">${result.hallazgos}</p>
+          <p style="margin:.25rem 0 0"><strong>Educativo:</strong> ${result.educativo || ""}</p>
+          <p style="font-size:.9rem;margin-top:.75rem;opacity:.9"><em>${result.disclaimer || ""}</em></p>
         </div>
       `;
 
-      $("#analyzeBtn").textContent = prevText;
+      $("#analyzeBtn").textContent = "Analizar";
       $("#analyzeBtn").disabled = false;
     };
 
-    actualizar();
+    setModo("local");
   }
 
   initUI();
-  console.log("AI v22 OK – " + new Date().toISOString());
 })();
