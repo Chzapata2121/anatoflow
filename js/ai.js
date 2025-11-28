@@ -1,244 +1,158 @@
-/* AnatoFlow v22 PRO - Analizador IA (local/simulador)
-   - Carga imagen (galería/cámara)
-   - Evalúa calidad técnica (enfoque/contraste/artefactos simulados)
-   - Infieren "tejido probable" (heurística básica)
-   - Genera semáforo: OK / Revisar / Rehacer
-   - Emite: anatoflow:aiResult (detail: { result })
+/* AnatoFlow v22 PRO – Analizador IA con modo LOCAL + HUGGING FACE (demo 10 días)
+   Tú controlas todo: duración demo, clave, etc.
 */
 (function () {
   "use strict";
 
-  const KEY_AI_LAST = "anatoflow_ai_last_v22";
-  const $ = (sel, root = document) => root.querySelector(sel);
+  const KEY_MUESTRA = "anatoflow_muestra_v22";
+  const KEY_DEMO_START = "anatoflow_demo_start";
+  const DEMO_DIAS = 10; // ← Cambia aquí si quieres 7, 30, 90 días...
 
-  function ensureAIUI() {
-    const root = document.getElementById("ia");
-    if (!root) return;
-    if (root.querySelector("[data-ai-ui='1']")) return;
+  // ← PON AQUÍ TU CLAVE HUGGING FACE CUANDO QUIERAS ACTIVAR MODO PRO
+  const HF_TOKEN = "TU_CLAVE_HF_AQUI"; // ejemplo: "hf_abc123..." (déjalo así hasta que quieras)
 
-    const wrap = document.createElement("div");
-    wrap.setAttribute("data-ai-ui", "1");
+  let lastFile = null;
+  let modoIA = "local";
 
-    wrap.innerHTML = `
-      <div class="card" style="margin-bottom:1rem;">
-        <div style="font-weight:900; font-size:1.05rem;">Calidad de imagen</div>
-        <div style="opacity:0.85; font-size:0.9rem; margin-top:0.2rem;">
-          Sube una imagen o toma una foto desde el microscopio. El análisis NO hace diagnóstico: evalúa calidad y coherencia con el tejido indicado.
-        </div>
+  const $ = (sel) => document.querySelector(sel);
 
-        <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.9rem;">
-          <button id="aiBtnUpload" style="flex:1; min-width:140px; padding:0.9rem; border-radius:12px; border:none; background:rgba(59,130,246,0.14); color:inherit; font-weight:900;">
-            Subir imagen
-          </button>
-          <button id="aiBtnCamera" style="flex:1; min-width:140px; padding:0.9rem; border-radius:12px; border:none; background:rgba(16,185,129,0.14); color:inherit; font-weight:900;">
-            Abrir cámara
-          </button>
-        </div>
+  // Simulador local EDUCATIVO y coherente (usa el órgano guardado)
+  function analizarLocal(organo) {
+    const organoLower = (organo || "desconocido").toLowerCase();
+    const niveles = ["Normal", "Reactivo / Inflamatorio", "Atipia / Lesión bajo grado", "Sospecha de malignidad"];
+    const nivel = niveles[Math.floor(Math.random() * niveles.length)];
 
-        <input id="aiUploadInput" type="file" accept="image/*" style="display:none;">
-        <input id="aiCameraInput" type="file" accept="image/*" capture="environment" style="display:none;">
-
-        <div id="aiPreview" style="margin-top:1rem; text-align:center;"></div>
-
-        <button id="aiAnalyze" style="display:none; margin-top:0.9rem; width:100%; padding:0.95rem; border-radius:12px; border:none; background:var(--primary); color:white; font-weight:900;">
-          Analizar
-        </button>
-      </div>
-
-      <div class="card" id="aiResultCard" style="display:none;">
-        <div id="aiResult"></div>
-        <div style="display:flex; gap:0.6rem; flex-wrap:wrap; margin-top:0.9rem;">
-          <button id="aiSendReport" style="flex:1; min-width:160px; padding:0.9rem; border-radius:12px; border:none; background:#10b981; color:white; font-weight:900;">
-            Enviar a Informe
-          </button>
-          <button id="aiClear" style="flex:1; min-width:160px; padding:0.9rem; border-radius:12px; border:1px solid rgba(148,163,184,0.55); background:transparent; color:inherit; font-weight:900;">
-            Limpiar
-          </button>
-        </div>
-      </div>
-    `;
-
-    root.appendChild(wrap);
-  }
-
-  function readAsDataURL(file) {
-    return new Promise((res, rej) => {
-      const fr = new FileReader();
-      fr.onload = () => res(fr.result);
-      fr.onerror = rej;
-      fr.readAsDataURL(file);
-    });
-  }
-
-  function randPick(arr) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
-
-  function analyzeLocal(organo = "") {
-    // Simulación heurística: sin diagnóstico (solo calidad/coherencia)
-    const organoUser = (organo || "").trim().toLowerCase();
-
-    const okMot = ["Buen enfoque general", "Contraste razonable", "Ausencia de artefactos graves"];
-    const warnMot = ["Enfoque irregular", "Contraste subóptimo", "Artefactos visibles (pliegues/burbujas)"];
-    const badMot = ["Fuera de foco", "Artefactos graves", "Iluminación deficiente"];
-
-    // tejido probable (ejemplos)
-    const tejidos = [
-      { t: "Tejido traqueal/respiratorio", cells: ["Células ciliadas", "Células caliciformes", "Células basales", "Condrocitos (si hay cartílago)"] },
-      { t: "Tejido hepático", cells: ["Hepatocitos", "Células de Kupffer", "Endotelio sinusoidal"] },
-      { t: "Tejido tiroideo", cells: ["Células foliculares", "Coloide", "Células de Hürthle/oncocíticas (si aplica)"] },
-      { t: "Epitelio escamoso (citología)", cells: ["Células escamosas superficiales", "Intermedias", "Parabasales (según caso)"] }
-    ];
-
-    // Coincidencia aproximada
-    const tejido = randPick(tejidos);
-    const match = organoUser ? (tejido.t.toLowerCase().includes(organoUser) || organoUser.includes("tiroid") && tejido.t.toLowerCase().includes("tiroid")) : true;
-
-    const r = Math.random();
-    let status = "OK";
-    let color = "#10b981";
-    let motives = okMot;
-    let recs = ["Imagen válida para registro", "Continuar flujo hacia informe/auditoría"];
-
-    if (!match || r > 0.55) {
-      status = "REVISAR";
-      color = "#f59e0b";
-      motives = warnMot;
-      recs = ["Reajustar enfoque", "Verificar iluminación", "Revisar limpieza de lentes/porta"];
-      if (!match) motives = [...motives, "El tejido probable NO coincide con el órgano indicado"];
-    }
-    if (r > 0.82) {
-      status = "REHACER";
-      color = "#ef4444";
-      motives = badMot;
-      recs = ["Repetir captura", "Evaluar necesidad de recorte/retinción", "Revisar artefactos de corte/montaje"];
+    let comentario = "";
+    if (organoLower.includes("tráquea") || organoLower.includes("bronquio")) {
+      comentario = nivel === "Normal" ? "Epitelio pseudoestratificado ciliado preservado. Células caliciformes visibles." :
+                  nivel.includes("Reactivo") ? "Inflamación leve con infiltrado linfocitario. Sin displasia." :
+                  nivel.includes("Atipia") ? "Algunas células con núcleos ligeramente agrandados. Revisar." :
+                  "Alta celularidad, núcleos hipercrómaticos y pleomórficos. Posible carcinoma.";
+    } else if (organoLower.includes("pulmón")) {
+      comentario = nivel === "Normal" ? "Alvéolos bien formados, macrófagos alveolares normales." :
+                  "Posible carcinoma escamocelular o adenocarcinoma según patrón.";
+    } else if (organoLower.includes("mama") {
+      comentario = nivel === "Normal" ? "Conductos y lobulillos mamarios normales." :
+                  "Posible carcinoma ductal invasivo o fibroadenoma.";
+    } else {
+      comentario = "Tejido conservado. " + nivel.toLowerCase() + ".";
     }
 
     return {
-      status,
-      color,
-      probableTissue: tejido.t,
-      observedCells: tejido.cells,
-      technicalMotives: motives,
-      recommendations: recs,
-      note:
-        "Este análisis evalúa calidad técnica y coherencia general. No reemplaza la evaluación diagnóstica del patólogo."
+      status: nivel.includes("Normal") ? "OK" : nivel.includes("Reactivo") ? "Revisar" : "Rehacer",
+      hallazgos: `Órgano: ${organo || "No especificado"}\nNivel: ${nivel}\n${comentario}`,
+      educativo: comentario,
+      disclaimer: "Interpretación preliminar educativa. Requiere confirmación por patólogo."
     };
   }
 
+  // Aquí irá Hugging Face cuando actives la demo (código preparado)
+
   function renderResult(result) {
-    const el = $("#aiResult");
-    const card = $("#aiResultCard");
-    if (!el || !card) return;
-
-    el.innerHTML = `
-      <div style="text-align:center; margin-bottom:1rem;">
-        <div style="display:inline-block; padding:0.8rem 1.2rem; border-radius:999px; background:${result.color}; color:white; font-weight:900; font-size:1.1rem;">
-          ${result.status}
-        </div>
+    $("#aiResult").innerHTML = `
+      <div style="padding:1rem; border-radius:12px; background:#f0fdf4; border:2px solid #10b981; margin-top:1rem;">
+        <h4 style="color:#10b981; margin:0 0 0.5rem;">${result.status}</h4>
+        <p style="white-space:pre-line; margin:0.5rem 0;">${result.hallazgos}</p>
+        <p style="font-size:0.9rem; color:#059669; margin-top:1rem;"><strong>Educativo:</strong> ${result.educativo}</p>
+        <p style="font-size:0.8rem; color:#dc2626; margin-top:1rem;"><em>${result.disclaimer || "Solo para apoyo educativo"}</em></p>
       </div>
+    `;
+  }
 
-      <div style="font-weight:900; margin-bottom:0.4rem;">Tejido probable</div>
-      <div style="margin-bottom:0.8rem;">${result.probableTissue}</div>
+  function initUI() {
+    const container = document.getElementById("ia");
+    if (!container || container.querySelector("#aiCustomUI")) return;
 
-      <div style="font-weight:900; margin-bottom:0.4rem;">Células/estructuras esperables</div>
-      <ul style="margin-top:0.2rem;">
-        ${result.observedCells.map(c => `<li>${c}</li>`).join("")}
-      </ul>
+    container.innerHTML = `
+      <div class="card" id="aiCustomUI">
+        <h2>Analizador IA</h2>
+        <p>Sube o fotografía el corte histológico</p>
 
-      <div style="font-weight:900; margin-top:0.9rem;">Hallazgos técnicos</div>
-      <ul style="margin-top:0.2rem;">
-        ${result.technicalMotives.map(m => `<li>${m}</li>`).join("")}
-      </ul>
+        <div style="text-align:center; margin:1.5rem 0;">
+          <label style="font-weight:600;">Modo análisis:</label><br>
+          <button id="modoLocalBtn" class="modoBtn active">Local (offline)</button>
+          <button id="modoHFBtn" class="modoBtn">Hugging Face (IA real)</button>
+        </div>
 
-      <div style="font-weight:900; margin-top:0.9rem;">Recomendaciones</div>
-      <ul style="margin-top:0.2rem;">
-        ${result.recommendations.map(r => `<li>${r}</li>`).join("")}
-      </ul>
+        <div style="display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+          <button id="aiBtnUpload">Subir imagen</button>
+          <button id="aiBtnCamera">Cámara</button>
+        </div>
+        <input type="file" id="aiUpload" accept="image/*" style="display:none">
+        <input type="file" id="aiCamera" accept="image/*" capture="environment" style="display:none">
 
-      <div style="margin-top:0.9rem; opacity:0.85; font-size:0.9rem;">
-        ${result.note}
+        <button id="aiAnalyze" disabled style="margin-top:1rem;">Analizar</button>
+        <div id="aiResult" style="margin-top:1rem;"></div>
       </div>
     `;
 
-    card.style.display = "block";
-  }
+    // Botones modo
+    $("#modoLocalBtn").onclick = () => { modoIA = "local"; actualizarBotones(); };
+    $("#modoHFBtn").onclick = () => {
+      if (HF_TOKEN === "TU_CLAVE_HF_AQUI") {
+        alert("Modo IA real no activado aún.\nContacta al desarrollador para demo.");
+        return;
+      }
+      if (!dentroDeDemo()) {
+        alert(`Demo IA real finalizada.\nVuelve al modo local o contacta al desarrollador.`);
+        modoIA = "local";
+      } else {
+        modoIA = "hugging";
+      }
+      actualizarBotones();
+    };
 
-  function clearAI() {
-    $("#aiPreview").innerHTML = "";
-    $("#aiAnalyze").style.display = "none";
-    $("#aiResultCard").style.display = "none";
-    localStorage.removeItem(KEY_AI_LAST);
-  }
-
-  function bindAI() {
-    const upBtn = $("#aiBtnUpload");
-    const camBtn = $("#aiBtnCamera");
-    const upIn = $("#aiUploadInput");
-    const camIn = $("#aiCameraInput");
-
-    let lastFile = null;
-
-    upBtn?.addEventListener("click", () => upIn.click());
-    camBtn?.addEventListener("click", () => camIn.click());
-
-    async function onFile(file) {
-      if (!file) return;
-      lastFile = file;
-      const url = await readAsDataURL(file);
-
-      $("#aiPreview").innerHTML = `<img src="${url}" style="max-width:100%; border-radius:14px; box-shadow:0 6px 20px rgba(0,0,0,0.14);">`;
-      $("#aiAnalyze").style.display = "block";
-      $("#aiAnalyze").disabled = false;
-      $("#aiAnalyze").textContent = "Analizar";
+    function actualizarBotones() {
+      $("#modoLocalBtn").classList.toggle("active", modoIA === "local");
+      $("#modoHFBtn").classList.toggle("active", modoIA === "hugging");
     }
 
-    upIn?.addEventListener("change", (e) => onFile(e.target.files?.[0]));
-    camIn?.addEventListener("change", (e) => onFile(e.target.files?.[0]));
+    // Uploads
+    $("#aiBtnUpload").onclick = () => $("#aiUpload").click();
+    $("#aiBtnCamera").onclick = () => $("#aiCamera").click();
 
-    $("#aiAnalyze")?.addEventListener("click", async () => {
+    ["#aiUpload", "#aiCamera"].forEach(id => {
+      $(id).onchange = (e) => {
+        if (e.target.files[0]) {
+          lastFile = e.target.files[0];
+          $("#aiAnalyze").disabled = false;
+        }
+      };
+    });
+
+    // Análisis
+    $("#aiAnalyze").onclick = async () => {
       if (!lastFile) return;
       $("#aiAnalyze").disabled = true;
-      $("#aiAnalyze").textContent = "Analizando…";
+      $("#aiAnalyze").textContent = "Analizando...";
 
-      // organo: si existe input en tu app final (en v22 lo conectaremos a datos)
-      const organo = document.getElementById("organo")?.value || "";
+      const muestra = JSON.parse(localStorage.getItem(KEY_MUESTRA) || "{}");
+      const organo = muestra.organo || "tejido";
 
-      setTimeout(() => {
-        const result = analyzeLocal(organo);
-        localStorage.setItem(KEY_AI_LAST, JSON.stringify({ at: new Date().toISOString(), result }));
-        renderResult(result);
+      let result;
+      if (modoIA === "hugging" && HF_TOKEN !== "TU_CLAVE_HF_AQUI" && dentroDeDemo()) {
+        // Aquí irá el código Hugging Face real (te lo paso cuando quieras activarlo)
+        result = { status: "OK", hallazgos: "IA real activada (próximamente)", educativo: "" };
+      } else {
+        result = analizarLocal(organo);
+      }
 
-        window.dispatchEvent(new CustomEvent("anatoflow:aiResult", { detail: { result } }));
-
-        $("#aiAnalyze").disabled = false;
-        $("#aiAnalyze").textContent = "Analizar";
-      }, 800);
-    });
-
-    $("#aiSendReport")?.addEventListener("click", () => {
-      const saved = localStorage.getItem(KEY_AI_LAST);
-      const payload = saved ? JSON.parse(saved) : null;
-
-      window.dispatchEvent(new CustomEvent("anatoflow:buildReport", {
-        detail: { ai: payload?.result || null }
-      }));
-
-      if (window.AnatoFlowUI?.setActiveTab) window.AnatoFlowUI.setActiveTab("informe");
-    });
-
-    $("#aiClear")?.addEventListener("click", clearAI);
+      renderResult(result);
+      $("#aiAnalyze").textContent = "Analizar";
+      $("#aiAnalyze").disabled = false;
+    };
   }
 
-  function init() {
-    ensureAIUI();
-    bindAI();
+  // Primera vez: ofrecer demo
+  if (!localStorage.getItem(KEY_DEMO_START) && HF_TOKEN !== "TU_CLAVE_HF_AQUI") {
+    setTimeout(() => {
+      if (confirm(`¿Quieres probar la IA real ${DEMO_DIAS} días gratis?\n\n(Después vuelve al modo local educativo)`)) {
+        localStorage.setItem(KEY_DEMO_START, new Date().toISOString());
+        alert("¡Demo activada! Recarga la página.");
+      }
+    }, 2000);
   }
 
-  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
-  else init();
-
-  window.AnatoFlowAI = {
-    clear: () => { try { localStorage.removeItem(KEY_AI_LAST); } catch {} }
-  };
+  initUI();
 })();
+
