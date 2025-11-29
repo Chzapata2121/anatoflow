@@ -184,7 +184,62 @@ function toggleOrganoInput() {
   <div id="protocolos" class="tab container"><div class="card"><h2>Protocolos</h2>Cargando protocolos…</div></div>
   <div id="timer" class="tab container"><div class="card"><h2>Timer</h2>Cargando…</div></div>
   <div id="inventario" class="tab container"><div class="card"><h2>Inventario</h2>Cargando…</div></div>
-  <div id="ia" class="tab container"><div class="card"><h2>Analizador IA</h2>Cargando…</div></div>
+  <!-- PESTAÑA IA – VERSIÓN FINAL BONITA EN MÓVIL Y ORDENADOR -->
+<div id="ia" class="tab container">
+  <div class="card">
+    <h2>Analizador IA</h2>
+    <p>Sube o fotografía el corte histológico</p>
+
+    <!-- MODO -->
+    <div style="text-align:center;margin:2rem 0">
+      <strong>Modo activo:</strong><br><br>
+      <div style="display:inline-flex;gap:1.5rem;flex-wrap:wrap;justify-content:center">
+        <button id="localBtn" class="modoBtn active" style="min-width:180px;padding:1rem 1.5rem;font-size:1.1rem">
+          <span style="font-size:2rem">📴</span><br>
+          <strong>LOCAL</strong><br>
+          <small>Offline · Siempre funciona</small>
+        </button>
+        <button id="hfBtn" class="modoBtn" style="min-width:180px;padding:1rem 1.5rem;font-size:1.1rem">
+          <span style="font-size:2rem">🌐</span><br>
+          <strong>HUGGING FACE</strong><br>
+          <small>IA real · Solo con clave</small>
+        </button>
+      </div>
+    </div>
+
+    <!-- CLAVE (solo visible al pulsar Hugging Face) -->
+    <div id="claveDiv" style="display:none;margin:2rem 0">
+      <input type="password" id="hfInput" placeholder="Pega tu clave hf_..." style="width:100%;padding:1rem;border-radius:12px;border:1px solid #cbd5e1;font-size:1.1rem">
+      <div style="margin-top:0.8rem;text-align:center">
+        <button id="saveKeyBtn" style="padding:0.8rem 1.5rem">Activar IA real</button>
+        <button id="removeKeyBtn" style="margin-left:1rem;background:#dc2626;padding:0.8rem 1.5rem">Quitar clave</button>
+      </div>
+    </div>
+
+    <!-- BOTONES SUBIR / CÁMARA -->
+    <div style="display:flex;gap:2rem;justify-content:center;margin:2.5rem 0;flex-wrap:wrap">
+      <button id="uploadBtn" style="padding:1.2rem 2.5rem;font-size:1.2rem;border-radius:16px">
+        Subir imagen
+      </button>
+      <button id="camBtn" style="padding:1.2rem 2.5rem;font-size:1.2rem;border-radius:16px">
+        Cámara
+      </button>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" style="display:none">
+    <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none">
+
+    <div id="preview" style="text-align:center;margin:2rem 0"></div>
+
+    <div style="text-align:center">
+      <button id="analyzeBtn" disabled style="padding:1.2rem 3rem;font-size:1.3rem;border-radius:16px;margin:1rem 0">
+        Analizar
+      </button>
+    </div>
+
+    <div id="result" style="margin-top:1.5rem"></div>
+  </div>
+</div>
   <div id="informe" class="tab container"><div class="card"><h2>Informe</h2>Cargando…</div></div>
 </div>
 
@@ -259,6 +314,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().the
 </body>
 
 </html>
+
 
 
 
