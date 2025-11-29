@@ -244,7 +244,9 @@ function toggleOrganoInput() {
 </div>
 
 <button class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-
+<div id="preview" style="text-align:center; margin:2rem 0;">
+  <!-- Aquí aparecerá la imagen subida -->
+</div>
 <nav style="overflow-x:auto;white-space:nowrap;display:flex">
   <button data-tab="home" class="active">Datos</button>
   <button data-tab="protocolos">Protocolos</button>
@@ -314,6 +316,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().the
 </body>
 
 </html>
+
 
 
 
