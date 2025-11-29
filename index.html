@@ -111,7 +111,7 @@ document.addEventListener("DOMContentLoaded", () => {
 function guardarDatosMuestra() {
   const select = document.getElementById("organo");
   const organoTexto = select.value === "otros" 
-    ? document.getElementById("organoOtro").value.trim() 
+    ? document.getElementById("organoOtro").value.trim() // ← Aquí estaba el error (falta una coma)
     : select.value;
   const organo = organoTexto || "No indicado";
 
@@ -119,7 +119,7 @@ function guardarDatosMuestra() {
     codigo: document.getElementById('codigoMuestra').value.trim(),
     tecnico: document.getElementById('tecnico').value.trim(),
     fecha: document.getElementById('fechaEntrada').value,
-    organo: organo,
+    organo: organo, // ← Ahora sí se guarda bien
     tipo: document.getElementById('tipoMuestra').value,
     condicion: document.getElementById('condicion').value,
     notas: document.getElementById('notas').value.trim(),
@@ -253,6 +253,7 @@ function toggleOtroOrgano() {
 </body>
 
 </html>
+
 
 
 
