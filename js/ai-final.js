@@ -177,7 +177,25 @@
     }
     actualizar();
   }
+function actualizarModoVisual() {
+  const esHF = localStorage.getItem(KEY_HF_TOKEN) && modoIA === "hugging";
+  
+  // Cambiar colores de color los botones
+  $("#localBtn").style.background = esHF ? "#f1f5f9" : "#e0e7ff";
+  $("#localBtn").style.borderColor = esHF ? "#94a3b8" : "#6366f1";
+  $("#hfBtn").style.background = esHF ? "#ecfdf5" : "#f0fdf4";
+  $("#hfBtn").style.borderColor = esHF ? "#16a34a" : "#10b981";
 
+  // Texto grande
+  $("#modoTexto").textContent = esHF ? "Hugging Face (IA real)" : "Local (offline)";
+  $("#modoTexto").style.color = esHF ? "#16a34a" : "#64748b";
+}
+
+// Llamar siempre que cambie el modo
+function actualizar() {
+  actualizarModoVisual();
+}
   initUI();
 })();
+
 
