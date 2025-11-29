@@ -252,10 +252,13 @@ function toggleOrganoInput() {
 <script src="js/inventory.js"></script>
 <script src="js/ai-final.js"></script>
 <script src="js/report.js"></script>
-
+<script>
+if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(reg => reg.unregister()));
+</script>
 </body>
 
 </html>
+
 
 
 
