@@ -55,24 +55,66 @@
       <input type="text" id="fechaEntrada" readonly value="Cargando...">
 
       <label>Origen del tejido / Órgano <span class="required">*</span></label>
-<select id="organo" onchange="toggleOrganoInput()" required>
-  <option value="">Seleccionar órgano común...</option>
-  <option>Tráquea</option>
-  <option>Pulmón</option>
-  <option>Hígado</option>
-  <option>Tiroides</option>
-  <option>Riñón</option>
-  <option>Mama</option>
-  <option>Próstata</option>
-  <option>Colon</option>
-  <option>Páncreas</option>
-  <option>Vejiga</option>
-  <option>Linfonodo</option>
-  <option>Cerebro</option>
-  <option>Médula ósea</option>
-  <option value="otros">Otro órgano / tejido</option>
-</select>
+<select id="organo" required>
+  <option value="">Seleccionar órgano...</option>
 
+  <!-- CABEZA Y CUELLO -->
+  <optgroup label="Cabeza y Cuello">
+    <option>Cerebro</option>
+    <option>Ojo</option>
+    <option>Oído</option>
+    <option>Lengua</option>
+    <option>Tiroides</option>
+    <option>Paratiroides</option>
+    <option>Laringe</option>
+    <option>Glándulas salivales</option>
+  </optgroup>
+
+  <!-- TÓRAX -->
+  <optgroup label="Tórax">
+    <option>Corazón</option>
+    <option>Pulmón</option>
+    <option>Esófago</option>
+    <option>Timo</option>
+    <option>Mama</option>
+  </optgroup>
+
+  <!-- ABDOMEN -->
+  <optgroup label="Abdomen">
+    <option>Estómago</option>
+    <option>Hígado</option>
+    <option>Páncreas</option>
+    <option>Vesícula biliar</option>
+    <option>Bazo</option>
+    <option>Intestino delgado</option>
+    <option>Colon</option>
+    <option>Recto</option>
+    <option>Apéndice</option>
+    <option>Riñón</option>
+    <option>Glándula suprarrenal</option>
+  </optgroup>
+
+  <!-- PELVIS -->
+  <optgroup label="Pelvis">
+    <option>Vejiga</option>
+    <option>Útero</option>
+    <option>Ovario</option>
+    <option>Próstata</option>
+    <option>Testículo</option>
+  </optgroup>
+
+  <!-- OTROS -->
+  <optgroup label="Otros tejidos">
+    <option>Piel</option>
+    <option>Linfonodo</option>
+    <option>Médula ósea</option>
+    <option>Tejido adiposo</option>
+    <option>Músculo esquelético</option>
+    <option>Hueso</option>
+    <option>Líquido cefalorraquídeo</option>
+    <option>Sangre periférica</option>
+  </optgroup>
+</select>
 <input type="text" id="organoOtro" placeholder="Ej: Vejiga, Pituitaria, Testículo, Útero, Corazón..." 
        style="display:none; margin-top:0.8rem; padding:1rem; width:100%; border-radius:12px; border:1px solid #94a3b8; font-size:1.1rem;">
 
@@ -255,6 +297,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().the
 </body>
 
 </html>
+
 
 
 
