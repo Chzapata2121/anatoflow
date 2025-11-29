@@ -109,19 +109,16 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 <script>
-// FUNCIÓN FINAL CORREGIDA – GUARDA EL ÓRGANO "OTROS" PERFECTO
 function guardarDatosMuestra() {
   const select = document.getElementById("organo");
-  const organoTexto = select.value === "otros" 
-  ? document.getElementById("organoOtro").value.trim() 
-  : select.value;
+  const organoTexto = select.value === "otros" ? document.getElementById("organoOtro").value.trim() : select.value;
   const organo = organoTexto || "No indicado";
 
   const datos = {
     codigo: document.getElementById('codigoMuestra').value.trim(),
     tecnico: document.getElementById('tecnico').value.trim(),
     fecha: document.getElementById('fechaEntrada').value,
-    organo: organo, // ← Ahora sí guarda "Tiroides", "Vejiga", etc.
+    organo: organo,
     tipo: document.getElementById('tipoMuestra').value,
     condicion: document.getElementById('condicion').value,
     notas: document.getElementById('notas').value.trim(),
@@ -258,6 +255,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().the
 </body>
 
 </html>
+
 
 
 
