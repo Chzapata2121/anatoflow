@@ -55,29 +55,56 @@
       <input type="text" id="fechaEntrada" readonly value="Cargando...">
 
       <label>Origen del tejido / Órgano <span class="required">*</span></label>
-<select id="organo" required onchange="toggleOtroOrgano()">
-  <option value="">Seleccionar...</option>
+<select id="organo" onchange="toggleOrganoInput()" required>
+  <option value="">Seleccionar órgano común...</option>
   <option>Tráquea</option>
   <option>Pulmón</option>
   <option>Hígado</option>
   <option>Tiroides</option>
   <option>Riñón</option>
-  <option>Piel</option>
   <option>Mama</option>
   <option>Próstata</option>
   <option>Colon</option>
-  <option value="otros">Otros</option>
+  <option>Páncreas</option>
+  <option>Vejiga</option>
+  <option>Linfonodo</option>
+  <option>Cerebro</option>
+  <option>Médula ósea</option>
+  <option value="otros">Otro órgano / tejido</option>
 </select>
 
-<input type="text" id="organoOtro" placeholder="Escribe el órgano (ej: Tiroides, Vesícula, Páncreas...)" style="display:none; margin-top:0.5rem; padding:1rem; width:100%; box-sizing:border-box; border-radius:12px; border:1px solid #cbd5e1">
+<input type="text" id="organoOtro" placeholder="Ej: Vejiga, Pituitaria, Testículo, Útero, Corazón..." 
+       style="display:none; margin-top:0.8rem; padding:1rem; width:100%; border-radius:12px; border:1px solid #94a3b8; font-size:1.1rem;">
 
 <script>
-function toggleOtroOrgano() {
+function toggleOrganoInput() {
   const select = document.getElementById("organo");
   const input = document.getElementById("organoOtro");
-  input.style.display = select.value === "otros" ? "block" : "none";
-  if (select.value !== "otros") input.value = "";
+  if (select.value === "otros") {
+    input.style.display = "block";
+    input.focus();
+    input.required = true;
+  } else {
+    input.style.display = "none";
+    input.required = false;
+    input.value = "";
+  }
 }
+
+// Al cargar la página, si hay datos guardados, mostrar el input si era "otros"
+document.addEventListener("DOMContentLoaded", () => {
+  const saved = localStorage.getItem("anatoflow_muestra_v22");
+  if (saved) {
+    const datos = JSON.parse(saved);
+    if (datos.organo && !["Tráquea","Pulmón","Hígado","Tiroides","Riñón","Mama","Próstata","Colon","Páncreas","Vejiga","Linfonodo","Cerebro","Médula ósea"].includes(datos.organo)) {
+      const select = document.getElementById("organo");
+      const input = document.getElementById("organoOtro");
+      select.value = "otros";
+      input.value = datos.organo;
+      input.style.display = "block";
+    }
+  }
+});
 </script>
 
 <script>
@@ -227,6 +254,7 @@ function toggleOtroOrgano() {
 </body>
 
 </html>
+
 
 
 
