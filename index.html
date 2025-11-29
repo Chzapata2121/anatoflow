@@ -255,15 +255,16 @@ function guardarDatosMuestra() {
 <div id="preview" style="text-align:center; margin:2rem 0;">
   <!-- Aquí aparecerá la imagen subida -->
 </div>
-<nav style="overflow-x:auto;white-space:nowrap;display:flex">
-  <button data-tab="home" class="active">Datos</button>
-  <button data-tab="protocolos">Protocolos</button>
-  <button data-tab="timer">Timer</button>
-  <button data-tab="inventario">Inventario</button>
-  <button data-tab="ia">IA</button>
-  <button data-tab="informe">Informe</button>
+<nav style="position:fixed; bottom:0; width:100%; background:white; border-top:1px solid #ddd; display:flex; z-index:99; overflow-x:auto; white-space:nowrap; padding-bottom:env(safe-area-inset-bottom);">
+  <div style="display:flex; min-width:max-content;">
+    <button data-tab="home" class="active">Datos</button>
+    <button data-tab="protocolos">Protocolos</button>
+    <button data-tab="timer">Timer</button>
+    <button data-tab="inventario">Inventario</button>
+    <button data-tab="ia">IA</button>
+    <button data-tab="informe">Informe</button>
+  </div>
 </nav>
-
 <script>
   // Fecha automática
   document.getElementById('fechaEntrada').value = new Date().toLocaleString('es-ES');
@@ -324,6 +325,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().the
 </body>
 
 </html>
+
 
 
 
