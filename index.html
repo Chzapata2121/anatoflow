@@ -113,8 +113,8 @@ document.addEventListener("DOMContentLoaded", () => {
 function guardarDatosMuestra() {
   const select = document.getElementById("organo");
   const organoTexto = select.value === "otros" 
-    ? document.getElementById("organoOtro").value.trim() 
-    : select.value;
+  ? document.getElementById("organoOtro").value.trim() 
+  : select.value;
   const organo = organoTexto || "No indicado";
 
   const datos = {
@@ -256,6 +256,7 @@ function toggleOrganoInput() {
 </body>
 
 </html>
+
 
 
 
