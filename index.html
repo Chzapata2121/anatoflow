@@ -55,18 +55,59 @@
       <input type="text" id="fechaEntrada" readonly value="Cargando...">
 
       <label>Origen del tejido / Órgano <span class="required">*</span></label>
-      <select id="organo" required>
-        <option value="">Seleccionar...</option>
-        <option>Tráquea</option>
-        <option>Pulmón</option>
-        <option>Hígado</option>
-        <option>Riñón</option>
-        <option>Piel</option>
-        <option>Mama</option>
-        <option>Próstata</option>
-        <option>Colon</option>
-        <option>Otros</option>
-      </select>
+<select id="organo" required onchange="toggleOtroOrgano(this)">
+  <option value="">Seleccionar...</option>
+  <option>Tráquea</option>
+  <option>Pulmón</option>
+  <option>Hígado</option>
+  <option>Tiroides</option>
+  <option>Riñón</option>
+  <option>Piel</option>
+  <option>Mama</option>
+  <option>Próstata</option>
+  <option>Colon</option>
+  <option value="otros">Otros</option>
+</select>
+
+<input type="text" id="organoOtro" placeholder="display:none; margin-top:0.5rem; padding:1rem; width:100%; border-radius:12px; border:1px solid #cbd5e1" placeholder="Escribe el órgano (ej: Tiroides, Vesícula, Páncreas...)">
+
+<script>
+function toggleOtroOrgano(select) {
+  const input = document.getElementById("organoOtro");
+  input.style.display = select.value === "otros" ? "block" : "none";
+  if (select.value !== "otros") input.value = "";
+}
+
+// Al guardar datos de muestra – MODIFICAR ESTA FUNCIÓN
+function guardarDatosMuestra() {
+  const select = document.getElementById("organo");
+  const organoTexto = select.value === "otros" ? document.getElementById("organoOtro").value.trim() : select.value;
+  const organo = organoTexto || "No indicado";
+
+  const datos = {
+    codigo: $("#codigoMuestra").value.trim(),
+    tecnico: $("#tecnico").value.trim(),
+    fecha: $("#fechaEntrada").value,
+    organo: organo,
+    tipo: $("#tipoMuestra").value,
+    condicion: $("#condicion").value,
+    notas: $("#notas").value.trim(),
+    guardadoEn: new Date().toISOString()
+  };
+
+  if (!datos.codigo || !datos.tecnico || !datos.organo || datos.organo === "No indicado" || !datos.tipo || !datos.condicion) {
+    alert("Por favor completa todos los campos obligatorios");
+    return;
+  }
+
+  localStorage.setItem(KEY_MUESTRA, JSON.stringify(datos));
+  $("#msgMuestra").textContent = "Datos guardados correctamente";
+  $("#msgMuestra").style.color = "#10b981";
+
+  // Pasar a Protocolos
+  document.querySelector('[data-tab="protocolos"]').click();
+}
+</script>
 
       <label>Tipo de muestra <span class="required">*</span></label>
       <select id="tipoMuestra" required>
@@ -175,5 +216,6 @@
 </body>
 
 </html>
+
 
 
