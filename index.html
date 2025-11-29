@@ -91,17 +91,19 @@ function toggleOrganoInput() {
   }
 }
 
-// Al cargar la página, si hay datos guardados, mostrar el input si era "otros"
+// Recuperar órgano personalizado al cargar la página
 document.addEventListener("DOMContentLoaded", () => {
   const saved = localStorage.getItem("anatoflow_muestra_v22");
   if (saved) {
     const datos = JSON.parse(saved);
+    const select = document.getElementById("organo");
+    const input = document.getElementById("organoOtro");
     if (datos.organo && !["Tráquea","Pulmón","Hígado","Tiroides","Riñón","Mama","Próstata","Colon","Páncreas","Vejiga","Linfonodo","Cerebro","Médula ósea"].includes(datos.organo)) {
-      const select = document.getElementById("organo");
-      const input = document.getElementById("organoOtro");
       select.value = "otros";
       input.value = datos.organo;
       input.style.display = "block";
+    } else if (datos.organo) {
+      select.value = datos.organo;
     }
   }
 });
@@ -111,9 +113,9 @@ document.addEventListener("DOMContentLoaded", () => {
 function guardarDatosMuestra() {
   const select = document.getElementById("organo");
   const organoTexto = select.value === "otros" 
-    ? document.getElementById("organoOtro").value.trim() // ← Aquí estaba el error (falta una coma)
-    : select.value;
-  const organo = organoTexto || "No indicado";
+  ? document.getElementById("organoOtro").value.trim() 
+  : select.value;
+const organo = organoTexto || "No indicado";
 
   const datos = {
     codigo: document.getElementById('codigoMuestra').value.trim(),
@@ -253,6 +255,7 @@ function toggleOtroOrgano() {
 </body>
 
 </html>
+
 
 
 
