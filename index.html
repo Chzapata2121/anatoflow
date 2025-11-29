@@ -110,7 +110,9 @@ document.addEventListener("DOMContentLoaded", () => {
 <script>
 // FUNCIÓN FINAL CORREGIDA – GUARDA EL ÓRGANO "OTROS" PERFECTO
 function guardarDatosMuestra() {
-  const select = document.getElementById("organo");
+  const organo = select.value === "otros" 
+  ? document.getElementById("organoOtro").value.trim() 
+  : select.value;
  const organoTexto = select.value === "otros" 
    ? document.getElementById("organoOtro").value.trim() 
    : select.value;
@@ -254,6 +256,7 @@ function toggleOtroOrgano() {
 </body>
 
 </html>
+
 
 
 
