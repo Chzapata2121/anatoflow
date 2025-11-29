@@ -69,10 +69,30 @@
         <p>Sube o fotografía el corte</p>
 
         <div style="text-align:center;margin:1.5rem 0">
-          <strong>Modo:</strong><br>
-          <button id="localBtn" class="modoBtn active">Local (offline)</button>
-          <button id="hfBtn" class="modoBtn">Hugging Face (IA real)</button>
-        </div>
+          <div style="text-align:center; margin:2rem 0; padding:1rem; border-radius:16px; background:#f8fafc; border:2px solid #e2e8f0;">
+  <p style="margin:0 0 1rem; font-size:1.1rem; color:#475569;"><strong>Modo de análisis activo:</strong></p>
+  
+<div style="text-align:center; margin:2rem 0; padding:1.5rem; border-radius:16px; background:#f8fafc; border:2px solid #e2e8f0;">
+  <p style="margin:0 0 1rem; font-size:1.1rem; color:#475569;"><strong>Modo de análisis activo:</strong></p>
+  
+  <div style="display:flex; gap:1.5rem; justify-content:center; flex-wrap:wrap;">
+    <button id="localBtn" class="modoBtn" style="padding:1.2rem 2rem; font-size:1.2rem; border-radius:16px; min-width:160px; background:#e0e7ff; border:3px solid #6366f1;">
+      <span style="font-size:2rem;">📴</span><br>
+      <strong style="color:#4338ca">LOCAL</strong><br>
+      <small style="color:#6366f1">Offline · Siempre funciona</small>
+    </button>
+    
+    <button id="hfBtn" class="modoBtn" style="padding:1.2rem 2rem; font-size:1.2rem; border-radius:16px; min-width:160px; background:#f0fdf4; border:3px solid #10b981;">
+      <span style="font-size:2rem;">🌐</span><br>
+      <strong style="color:#166534">HUGGING FACE</strong><br>
+      <small style="color:#16a34a">IA real · Solo con clave</small>
+    </button>
+  </div>
+
+  <div id="modoActual" style="margin-top:2rem; font-size:1.6rem; font-weight:bold;">
+    Actualmente usando → <span id="modoTexto" style="color:#10b981;">Local (offline)</span>
+  </div>
+</div>
 
         <div id="claveDiv" style="display:none;margin:1rem 0">
           <input type="password" id="hfInput" placeholder="Pega tu clave hf_..." style="width:100%;padding:1rem">
@@ -160,3 +180,4 @@
 
   initUI();
 })();
+
