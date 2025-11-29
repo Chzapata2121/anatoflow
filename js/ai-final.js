@@ -11,75 +11,105 @@
   const $ = s => document.querySelector(s);
 
   function analizarLocal(organo) {
-    const o = (organo || "No indicado").toLowerCase();
-    const niveles = ["Normal", "Reactivo / Inflamatorio", "Atipia / Lesión bajo grado", "Sospecha de malignidad"];
-    const nivel = niveles[Math.floor(Math.random() * niveles.length)];
+  const o = (organo || "No indicado").toLowerCase();
+  const niveles = ["Normal", "Reactivo / Inflamatorio", "Atipia / Lesión bajo grado", "Sospecha de malignidad"];
+  const nivel = niveles[Math.floor(Math.random() * niveles.length)];
 
-    let detalle = "";
-    let hallazgos = "";
+  let detalle = "";
+  let hallazgos = "";
 
-    if (o.includes("tiroides")) {
-      if (nivel === "Normal") {
-        detalle = "Folículos tiroideos con coloide homogéneo y abundante. Células foliculares cúbicas regulares. Sin atipia.";
-        hallazgos = "Aspecto histológico normal de tiroides.";
-      } else if (nivel.includes("Reactivo")) {
-        detalle = "Tiroiditis linfocítica crónica (Hashimoto). Infiltrado linfoplasmocitario denso. Células de Hürthle presentes.";
-        hallazgos = "Patrón inflamatorio crónico con destrucción folicular.";
-      } else if (nivel.includes("Atipia")) {
-        detalle = "Nódulo folicular con atipia cytológica. Posible adenoma folicular vs carcinoma folicular mínimamente invasivo.";
-        hallazgos = "Arquitectura folicular con núcleos agrandados y pseudoinclusiones.";
-      } else {
-        detalle = "Carcinoma papilar de tiroides sospechoso: núcleos en vidrio esmerilado, surcos nucleares, cuerpos de psammoma, patrón papilar.";
-        hallazgos = "Alta sospecha de malignidad – requiere estudio inmunohistoquímico (BRAF, etc.).";
-      }
-    } else if (o.includes("tráquea") || o.includes("bronquio")) {
-      detalle = nivel === "Normal" ? "Epitelio pseudoestratificado ciliado bien conservado. Células caliciformes abundantes." :
-                nivel.includes("Reactivo") ? "Metaplasia escamosa reactiva por inflamación crónica." :
-                nivel.includes("Atipia") ? "Displasia de bajo grado en epitelio respiratorio." :
-                "Carcinoma escamocelular in situ o invasivo – pleomorfismo marcado.";
-      hallazgos = "Epitelio respiratorio " + nivel.toLowerCase() + ".";
-    } else if (o.includes("pulmón")) {
-      detalle = nivel === "Normal" ? "Parénquima pulmonar conservado. Alvéolos abiertos." : "Posible adenocarcinoma o carcinoma escamocelular.";
-      hallazgos = "Tejido pulmonar " + nivel.toLowerCase() + ".";
+  // ANÁLISIS ESPECÍFICO PARA CUALQUIER ÓRGANO QUE ESCRIBAS
+  if (o.includes("tiroides")) {
+    if (nivel === "Normal") {
+      detalle = "Folículos tiroideos con coloide homogéneo y abundante. Células foliculares cúbicas regulares. Sin atipia.";
+      hallazgos = "Aspecto histológico normal de tiroides.";
+    } else if (nivel.includes("Reactivo")) {
+      detalle = "Tiroiditis linfocítica crónica (Hashimoto). Infiltrado linfoplasmocitario denso. Células de Hürthle presentes.";
+      hallazgos = "Patrón inflamatorio crónico con destrucción folicular.";
+    } else if (nivel.includes("Atipia")) {
+      detalle = "Nódulo folicular con atipia cytológica. Posible adenoma folicular vs carcinoma folicular mínimamente invasivo.";
+      hallazgos = "Arquitectura folicular con núcleos agrandados y pseudoinclusiones.";
     } else {
-      detalle = "Tejido conservado con celularidad " + nivel.toLowerCase() + ". Sin hallazgos específicos por órgano no indicado.";
-      hallazgos = "Análisis limitado – indica el órgano para mayor precisión.";
+      detalle = "Carcinoma papilar de tiroides sospechoso: núcleos en vidrio esmerilado, surcos nucleares, cuerpos de psammoma, patrón papilar.";
+      hallazgos = "Alta sospecha de malignidad – requiere estudio inmunohistoquímico (BRAF, etc.).";
     }
-
-    return {
-      status: nivel.includes("Normal") ? "OK" : nivel.includes("Reactivo") ? "Revisar" : "Rehacer",
-      hallazgos: `ÓRGANO: ${organo}\nNIVEL: ${nivel}\n\n${detalle}`,
-      educativo: detalle,
-      disclaimer: "Interpretación preliminar educativa – requiere confirmación por patólogo."
-    };
+  } else if (o.includes("vejiga")) {
+    if (nivel === "Normal") {
+      detalle = "Epitelio urotelial de transición normal. Capas basales preservadas.";
+      hallazgos = "Aspecto normal de vejiga.";
+    } else if (nivel.includes("Reactivo")) {
+      detalle = "Cistitis crónica con metaplasia escamosa reactiva.";
+      hallazgos = "Inflamación crónica de vejiga.";
+    } else if (nivel.includes("Atipia")) {
+      detalle = "Displasia urotelial de bajo grado.";
+      hallazgos = "Lesión premaligna de bajo riesgo.";
+    } else {
+      detalle = "Carcinoma urotelial invasivo – pleomorfismo marcado y invasión de la lámina propia.";
+      hallazgos = "Alta sospecha de malignidad en vejiga.";
+    }
+  } else if (o.includes("pituitaria") || o.includes("hipofis")) {
+    if (nivel === "Normal") {
+      detalle = "Adenohypophysis con células cromófilas uniformes.";
+      hallazgos = "Hipófisis normal.";
+    } else {
+      detalle = "Adenoma hipofisario con atipia. Posible secreción hormonal.";
+      hallazgos = "Lesión tumoral de hipófisis.";
+    }
+  } else if (o.includes("médula ósea")) {
+    if (nivel === "Normal") {
+      detalle = "Médula ósea normal con trilinaje preservado (eritroide, granulocítica, megacariocítica).";
+      hallazgos = "Aspecto normal.";
+    } else if (nivel.includes("Reactivo")) {
+      detalle = "Hiperplasia reactiva megacariocítica.";
+      hallazgos = "Respuesta reactiva.";
+    } else {
+      detalle = "Mielodisplasia o infiltrado neoplásico sospechoso.";
+      hallazgos = "Sospecha de neoplasia hematológica.";
+    }
+  } else if (o.includes("corazón")) {
+    if (nivel === "Normal") {
+      detalle = "Miocardio normal con fibras estriadas regulares.";
+      hallazgos = "Corazón normal.";
+    } else {
+      detalle = "Miocarditis linfocítica o miocardiopatía dilatada.";
+      hallazgos = "Lesión inflamatoria o degenerativa.";
+    }
+  } else if (o.includes("testículo")) {
+    if (nivel === "Normal") {
+      detalle = "Túbulos seminíferos normales con espermatogénesis completa.";
+      hallazgos = "Testículo normal.";
+    } else {
+      detalle = "Tumor de células de Sertoli o Leydig sospechoso.";
+      hallazgos = "Sospecha de neoplasia testicular.";
+    }
+  } else if (o.includes("útero")) {
+    if (nivel === "Normal") {
+      detalle = "Endometrio proliferativo o secretorio normal.";
+      hallazgos = "Útero normal.";
+    } else {
+      detalle = "Hiperplasia endometrial o carcinoma endometriode.";
+      hallazgos = "Lesión endometrial.";
+    }
+  } else if (o.includes("ovario")) {
+    if (nivel === "Normal") {
+      detalle = "Ovarios normales con folículos en diferentes estadios.";
+      hallazgos = "Ovario normal.";
+    } else {
+      detalle = "Cistoadenoma seroso o carcinoma de ovario.";
+      hallazgos = "Sospecha de neoplasia ovárica.";
+    }
+  } else {
+    detalle = "Tejido conservado con celularidad " + nivel.toLowerCase() + ". Sin hallazgos específicos por órgano no reconocido.";
+    hallazgos = "Análisis general.";
   }
 
-  async function analizarHugging(file) {
-    const token = localStorage.getItem(KEY_HF_TOKEN);
-    if (!token) return analizarLocal("");
-
-    const form = new FormData();
-    form.append("inputs", file);
-
-    try {
-      const res = await fetch("https://api-inference.huggingface.co/models/owkin/phikon-vit-b-histopathology", {
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        body: form
-      });
-      const data = await res.json();
-      const top = data[0] || {};
-      return {
-        status: top.score > 0.8 ? "OK" : "Revisar",
-        hallazgos: `IA REAL (Hugging Face)\nConfianza: ${Math.round((top.score || 0)*100)}%\nClasificación: ${top.label || "desconocida"}`,
-        educativo: "Resultado con modelo especializado en histopatología.",
-        disclaimer: "¡Clave personal activa!"
-      };
-    } catch (e) {
-      return { status: "Error", hallazgos: "Error IA real – modo local activo." };
-    }
-  }
-
+  return {
+    status: nivel.includes("Normal") ? "OK" : nivel.includes("Reactivo") ? "Revisar" : "Rehacer",
+    hallazgos: `ÓRGANO: ${organo}\nNIVEL: ${nivel}\n\n${detalle}`,
+    educativo: detalle,
+    disclaimer: "Interpretación preliminar educativa – requiere confirmación por patólogo."
+  };
+}
   function initUI() {
     const c = document.getElementById("ia");
     if (!c || c.querySelector("#aiOK")) return;
@@ -186,3 +216,4 @@
   initUI();
   console.log("AI FINAL 2025 – ÓRGANO FIJO + ANÁLISIS RICO");
 })();
+
