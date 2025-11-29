@@ -90,13 +90,13 @@ function guardarDatosMuestra() {
   const organo = organoTexto || "No indicado";
 
   const datos = {
-    codigo: document.getElementById("codigoMuestra").value.trim(),
-    tecnico: document.getElementById("tecnico").value.trim(),
-    fecha: document.getElementById("fechaEntrada").value,
+    codigo: document.getElementById('codigoMuestra').value.trim(),
+    tecnico: document.getElementById('tecnico').value.trim(),
+    fecha: document.getElementById('fechaEntrada').value,
     organo: organo,
-    tipo: document.getElementById("tipoMuestra").value,
-    condicion: document.getElementById("condicion").value,
-    notas: document.getElementById("notas").value.trim(),
+    tipo: document.getElementById('tipoMuestra').value,
+    condicion: document.getElementById('condicion').value,
+    notas: document.getElementById('notas').value.trim(),
     guardadoEn: new Date().toISOString()
   };
 
@@ -105,6 +105,7 @@ function guardarDatosMuestra() {
     return;
   }
 
+  // CLAVE CORREGIDA – AHORA SÍ GUARDA EL ÓRGANO BIEN
   localStorage.setItem("anatoflow_muestra_v22", JSON.stringify(datos));
   document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
   document.getElementById("msgMuestra").style.color = "#10b981";
@@ -227,6 +228,7 @@ function toggleOtroOrgano() {
 </body>
 
 </html>
+
 
 
 
