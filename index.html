@@ -55,7 +55,7 @@
       <input type="text" id="fechaEntrada" readonly value="Cargando...">
 
       <label>Origen del tejido / Órgano <span class="required">*</span></label>
-<select id="organo" required onchange="toggleOtroOrgano(this)">
+<select id="organo" required onchange="toggleOtroOrgano()">
   <option value="">Seleccionar...</option>
   <option>Tráquea</option>
   <option>Pulmón</option>
@@ -69,14 +69,16 @@
   <option value="otros">Otros</option>
 </select>
 
-<input type="text" id="organoOtro" placeholder="display:none; margin-top:0.5rem; padding:1rem; width:100%; border-radius:12px; border:1px solid #cbd5e1" placeholder="Escribe el órgano (ej: Tiroides, Vesícula, Páncreas...)">
+<input type="text" id="organoOtro" placeholder="Escribe el órgano (ej: Tiroides, Vesícula, Páncreas...)" style="display:none; margin-top:0.5rem; padding:1rem; width:100%; box-sizing:border-box; border-radius:12px; border:1px solid #cbd5e1">
 
 <script>
-function toggleOtroOrgano(select) {
+function toggleOtroOrgano() {
+  const select = document.getElementById("organo");
   const input = document.getElementById("organoOtro");
   input.style.display = select.value === "otros" ? "block" : "none";
   if (select.value !== "otros") input.value = "";
 }
+</script>
 
 // Al guardar datos de muestra – MODIFICAR ESTA FUNCIÓN
 function guardarDatosMuestra() {
@@ -216,6 +218,7 @@ function guardarDatosMuestra() {
 </body>
 
 </html>
+
 
 
 
