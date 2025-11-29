@@ -113,15 +113,15 @@ document.addEventListener("DOMContentLoaded", () => {
 function guardarDatosMuestra() {
   const select = document.getElementById("organo");
   const organoTexto = select.value === "otros" 
-  ? document.getElementById("organoOtro").value.trim() 
-  : select.value;
-const organo = organoTexto || "No indicado";
+    ? document.getElementById("organoOtro").value.trim() 
+    : select.value;
+  const organo = organoTexto || "No indicado";
 
   const datos = {
     codigo: document.getElementById('codigoMuestra').value.trim(),
     tecnico: document.getElementById('tecnico').value.trim(),
     fecha: document.getElementById('fechaEntrada').value,
-    organo: organo, // ← Ahora sí se guarda bien
+    organo: organo, // ← Ahora sí guarda "Tiroides", "Vejiga", etc.
     tipo: document.getElementById('tipoMuestra').value,
     condicion: document.getElementById('condicion').value,
     notas: document.getElementById('notas').value.trim(),
@@ -141,13 +141,14 @@ const organo = organoTexto || "No indicado";
   document.querySelector('[data-tab="protocolos"]').click();
 }
 
-function toggleOtroOrgano() {
+function toggleOrganoInput() {
   const select = document.getElementById("organo");
   const input = document.getElementById("organoOtro");
   input.style.display = select.value === "otros" ? "block" : "none";
   if (select.value !== "otros") input.value = "";
 }
 </script>
+      
       <label>Tipo de muestra <span class="required">*</span></label>
       <select id="tipoMuestra" required>
         <option value="">Seleccionar...</option>
@@ -255,6 +256,7 @@ function toggleOtroOrgano() {
 </body>
 
 </html>
+
 
 
 
