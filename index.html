@@ -115,9 +115,7 @@
 
 <script>
 function guardarDatosMuestra() {
-  const select = document.getElementById("organo");
-  const organoTexto = select.value === "otros" ? document.getElementById("organoOtro").value.trim() : select.value;
-  const organo = organoTexto || "No indicado";
+  const organo = document.getElementById("organo").value || "No indicado";
 
   const datos = {
     codigo: document.getElementById('codigoMuestra').value.trim(),
@@ -141,13 +139,6 @@ function guardarDatosMuestra() {
 
   // Pasar a Protocolos
   document.querySelector('[data-tab="protocolos"]').click();
-}
-
-function toggleOrganoInput() {
-  const select = document.getElementById("organo");
-  const input = document.getElementById("organoOtro");
-  input.style.display = select.value === "otros" ? "block" : "none";
-  if (select.value !== "otros") input.value = "";
 }
 </script>
       
@@ -333,6 +324,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().the
 </body>
 
 </html>
+
 
 
 
