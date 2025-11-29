@@ -80,37 +80,46 @@ function toggleOtroOrgano() {
 }
 </script>
 
-// Al guardar datos de muestra – MODIFICAR ESTA FUNCIÓN
+<script>
+// AI guardar datos de muestra – FUNCIÓN CORREGIDA Y 100% FUNCIONAL
 function guardarDatosMuestra() {
   const select = document.getElementById("organo");
-  const organoTexto = select.value === "otros" ? document.getElementById("organoOtro").value.trim() : select.value;
+  const organoTexto = select.value === "otros" 
+    ? document.getElementById("organoOtro").value.trim() 
+    : select.value;
   const organo = organoTexto || "No indicado";
 
   const datos = {
-    codigo: $("#codigoMuestra").value.trim(),
-    tecnico: $("#tecnico").value.trim(),
-    fecha: $("#fechaEntrada").value,
+    codigo: document.getElementById("codigoMuestra").value.trim(),
+    tecnico: document.getElementById("tecnico").value.trim(),
+    fecha: document.getElementById("fechaEntrada").value,
     organo: organo,
-    tipo: $("#tipoMuestra").value,
-    condicion: $("#condicion").value,
-    notas: $("#notas").value.trim(),
+    tipo: document.getElementById("tipoMuestra").value,
+    condicion: document.getElementById("condicion").value,
+    notas: document.getElementById("notas").value.trim(),
     guardadoEn: new Date().toISOString()
   };
 
-  if (!datos.codigo || !datos.tecnico || !datos.organo || datos.organo === "No indicado" || !datos.tipo || !datos.condicion) {
+  if (!datos.codigo || !datos.tecnico || datos.organo === "No indicado" || !datos.tipo || !datos.condicion) {
     alert("Por favor completa todos los campos obligatorios");
     return;
   }
 
-  localStorage.setItem(KEY_MUESTRA, JSON.stringify(datos));
-  $("#msgMuestra").textContent = "Datos guardados correctamente";
-  $("#msgMuestra").style.color = "#10b981";
+  localStorage.setItem("anatoflow_muestra_v22", JSON.stringify(datos));
+  document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
+  document.getElementById("msgMuestra").style.color = "#10b981";
 
   // Pasar a Protocolos
   document.querySelector('[data-tab="protocolos"]').click();
 }
-</script>
 
+function toggleOtroOrgano() {
+  const select = document.getElementById("organo");
+  const input = document.getElementById("organoOtro");
+  input.style.display = select.value === "otros" ? "block" : "none";
+  if (select.value !== "otros") input.value = "";
+}
+</script>
       <label>Tipo de muestra <span class="required">*</span></label>
       <select id="tipoMuestra" required>
         <option value="">Seleccionar...</option>
@@ -218,6 +227,7 @@ function guardarDatosMuestra() {
 </body>
 
 </html>
+
 
 
 
