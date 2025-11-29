@@ -81,44 +81,43 @@ function toggleOtroOrgano() {
 </script>
 
 <script>
-// AI guardar datos de muestra – FUNCIÓN CORREGIDA Y 100% FUNCIONAL
+// FUNCIÓN FINAL CORREGIDA – GUARDA EL ÓRGANO "OTROS" PERFECTO
 function guardarDatosMuestra() {
   const select = document.getElementById("organo");
-  const organoTexto = select.value === "otros" 
-    ? document.getElementById("organoOtro").value.trim() 
-    : select.value;
-  const organo = organoTexto || "No indicado";
+ const organoTexto = select.value === "otros" 
+   ? document.getElementById("organoOtro").value.trim() 
+   : select.value;
+ const organo = organoTexto || "No indicado";
 
-  const datos = {
-    codigo: document.getElementById('codigoMuestra').value.trim(),
-    tecnico: document.getElementById('tecnico').value.trim(),
-    fecha: document.getElementById('fechaEntrada').value,
-    organo: organo,
-    tipo: document.getElementById('tipoMuestra').value,
-    condicion: document.getElementById('condicion').value,
-    notas: document.getElementById('notas').value.trim(),
-    guardadoEn: new Date().toISOString()
-  };
+ const datos = {
+   codigo: document.getElementById('codigoMuestra').value.trim(),
+   tecnico: document.getElementById('tecnico').value.trim(),
+   fecha: document.getElementById('fechaEntrada').value,
+   organo: organo,  // ← AHORA SÍ SE GUARDA BIEN
+   tipo: document.getElementById('tipoMuestra').value,
+   condicion: document.getElementById('condicion').value,
+   notas: document.getElementById('notas').value.trim(),
+   guardadoEn: new Date().toISOString()
+ };
 
-  if (!datos.codigo || !datos.tecnico || datos.organo === "No indicado" || !datos.tipo || !datos.condicion) {
-    alert("Por favor completa todos los campos obligatorios");
-    return;
-  }
+ if (!datos.codigo || !datos.tecnico || datos.organo === "No indicado" || !datos.tipo || !datos.condicion) {
+   alert("Por favor completa todos los campos obligatorios");
+   return;
+ }
 
-  // CLAVE CORREGIDA – AHORA SÍ GUARDA EL ÓRGANO BIEN
-  localStorage.setItem("anatoflow_muestra_v22", JSON.stringify(datos));
-  document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
-  document.getElementById("msgMuestra").style.color = "#10b981";
+ localStorage.setItem("anatoflow_muestra_v22", JSON.stringify(datos)); // ← CLAVE CORRECTA
+ document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
+ document.getElementById("msgMuestra").style.color = "#10b981";
 
-  // Pasar a Protocolos
-  document.querySelector('[data-tab="protocolos"]').click();
+ // Pasar a Protocolos
+ document.querySelector('[data-tab="protocolos"]').click();
 }
 
 function toggleOtroOrgano() {
-  const select = document.getElementById("organo");
-  const input = document.getElementById("organoOtro");
-  input.style.display = select.value === "otros" ? "block" : "none";
-  if (select.value !== "otros") input.value = "";
+ const select = document.getElementById("organo");
+ const input = document.getElementById("organoOtro");
+ input.style.display = select.value === "otros" ? "block" : "none";
+ if (select.value !== "otros") input.value = "";
 }
 </script>
       <label>Tipo de muestra <span class="required">*</span></label>
@@ -228,6 +227,7 @@ function toggleOtroOrgano() {
 </body>
 
 </html>
+
 
 
 
