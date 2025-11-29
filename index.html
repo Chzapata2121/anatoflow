@@ -55,55 +55,51 @@
       <input type="text" id="fechaEntrada" readonly value="Cargando...">
 
       <label>Origen del tejido / Órgano <span class="required">*</span></label>
+<label>Origen del tejido / Órgano <span class="required">*</span></label>
 <select id="organo" required>
   <option value="">Seleccionar órgano...</option>
-
-  <!-- CABEZA Y CUELLO -->
+  
   <optgroup label="Cabeza y Cuello">
     <option>Cerebro</option>
-    <option>Ojo</option>
-    <option>Oído</option>
+    <option>Ojos</option>
+    <option>Oídos</option>
     <option>Lengua</option>
     <option>Tiroides</option>
-    <option>Paratiroides</option>
     <option>Laringe</option>
     <option>Glándulas salivales</option>
   </optgroup>
-
-  <!-- TÓRAX -->
+  
   <optgroup label="Tórax">
     <option>Corazón</option>
-    <option>Pulmón</option>
+    <option>Pulmones</option>
     <option>Esófago</option>
     <option>Timo</option>
     <option>Mama</option>
   </optgroup>
-
-  <!-- ABDOMEN -->
+  
   <optgroup label="Abdomen">
     <option>Estómago</option>
     <option>Hígado</option>
     <option>Páncreas</option>
-    <option>Vesícula biliar</option>
+    <option>Vesícula Biliar</option>
     <option>Bazo</option>
-    <option>Intestino delgado</option>
+    <option>Intestino Delgado</option>
+    <option>Intestino Grueso</option>
     <option>Colon</option>
     <option>Recto</option>
     <option>Apéndice</option>
-    <option>Riñón</option>
-    <option>Glándula suprarrenal</option>
+    <option>Riñones</option>
+    <option>Glándulas Suprarrenales</option>
   </optgroup>
-
-  <!-- PELVIS -->
+  
   <optgroup label="Pelvis">
     <option>Vejiga</option>
     <option>Útero</option>
-    <option>Ovario</option>
+    <option>Ovarios</option>
     <option>Próstata</option>
-    <option>Testículo</option>
+    <option>Testículos</option>
   </optgroup>
-
-  <!-- OTROS -->
+  
   <optgroup label="Otros tejidos">
     <option>Piel</option>
     <option>Linfonodo</option>
@@ -115,41 +111,7 @@
     <option>Sangre periférica</option>
   </optgroup>
 </select>
-<input type="text" id="organoOtro" placeholder="Ej: Vejiga, Pituitaria, Testículo, Útero, Corazón..." 
-       style="display:none; margin-top:0.8rem; padding:1rem; width:100%; border-radius:12px; border:1px solid #94a3b8; font-size:1.1rem;">
 
-<script>
-function toggleOrganoInput() {
-  const select = document.getElementById("organo");
-  const input = document.getElementById("organoOtro");
-  if (select.value === "otros") {
-    input.style.display = "block";
-    input.focus();
-    input.required = true;
-  } else {
-    input.style.display = "none";
-    input.required = false;
-    input.value = "";
-  }
-}
-
-// Recuperar órgano personalizado al cargar la página
-document.addEventListener("DOMContentLoaded", () => {
-  const saved = localStorage.getItem("anatoflow_muestra_v22");
-  if (saved) {
-    const datos = JSON.parse(saved);
-    const select = document.getElementById("organo");
-    const input = document.getElementById("organoOtro");
-    if (datos.organo && !["Tráquea","Pulmón","Hígado","Tiroides","Riñón","Mama","Próstata","Colon","Páncreas","Vejiga","Linfonodo","Cerebro","Médula ósea"].includes(datos.organo)) {
-      select.value = "otros";
-      input.value = datos.organo;
-      input.style.display = "block";
-    } else if (datos.organo) {
-      select.value = datos.organo;
-    }
-  }
-});
-</script>
 <script>
 function guardarDatosMuestra() {
   const select = document.getElementById("organo");
@@ -297,6 +259,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().the
 </body>
 
 </html>
+
 
 
 
