@@ -197,14 +197,21 @@ Ejemplo: "Calidad: Alta. Estructuras: Foliculos tiroideos. Hallazgos: Coloide ho
       $("#analyzeBtn").disabled = false;
     };
 
-    function actualizar() {
+        function actualizar() {
+      const tieneClave = !!localStorage.getItem(KEY_GEMINI_KEY);
       $("#localBtn").classList.toggle("active", modoIA === "local");
       $("#geminiBtn").classList.toggle("active", modoIA === "gemini");
+      
+      // Mostrar/ocultar recuadro clave
+      $("#claveDiv").style.display = tieneClave ? "none" : "block";
+      
+      // Mostrar mensaje "IA real activada" si hay clave
+      $("#iaActivaMsg").style.display = tieneClave ? "block" : "none";
     }
     actualizar();
   }
-
   initUI();
 })();
+
 
 
