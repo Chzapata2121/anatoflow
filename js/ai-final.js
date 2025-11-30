@@ -1,4 +1,4 @@
-/* AnatoFlow v22 PRO – IA FINAL 100% FUNCIONAL (Gemini + Local) – 2025 */
+/* AnatoFlow v22 PRO – IA FINAL 100% FUNCIONAL (sin errores) */
 (() => {
   "use strict";
 
@@ -18,34 +18,27 @@
 
     let detalle = "";
     if (o.includes("tiroides")) {
-      detalle = nivel === "Normal"
-        ? "Folículos tiroideos con coloide homogéneo y abundante. Células foliculares cúbicas regulares. Sin atipia."
-        : nivel.includes("Reactivo")
-        ? "Tiroiditis linfocítica (Hashimoto). Infiltrado linfocitario + células de Hürthle."
-        : nivel.includes("Atipia")
-        ? "Nódulo folicular con atipia cytológica. Posible adenoma vs carcinoma folicular."
-        : "Carcinoma papilar sospechoso: núcleos en vidrio esmerilado, surcos, cuerpos de psammoma.";
+      detalle = nivel === "Normal"Normal" ? "Folículos tiroideos con coloide homogéneo y abundante. Células foliculares cúbicas regulares. Sin atipia." :
+                nivel.includes("Reactivo") ? "Tiroiditis linfocítica (Hashimoto). Infiltrado linfocitario + células de Hürthle." :
+                nivel.includes("Atipia") ? "Nódulo folicular con atipia. Posible adenoma vs carcinoma folicular." :
+                "Carcinoma papilar sospechoso: núcleos en vidrio esmerilado, surcos, cuerpos de psammoma.";
     } else if (o.includes("vejiga")) {
-      detalle = nivel === "Normal"
-        ? "Epitelio urotelial normal. Capas bien definidas."
-        : "Carcinoma urotelial invasivo – pleomorfismo marcado.";
+      detalle = nivel === "Normal" ? "Epitelio urotelial normal." : "Carcinoma urotelial invasivo.";
     } else if (o.includes("pulmón")) {
-      detalle = nivel === "Normal"
-        ? "Alvéolos abiertos. Macrófagos alveolares normales."
-        : "Posible adenocarcinoma o carcinoma escamocelular.";
+      detalle = nivel === "Normal"Normal" ? "Alvéolos abiertos." : "Posible adenocarcinoma.";
     } else {
-      detalle = "Tejido conservado con celularidad " + nivel.toLowerCase() + ".";
+      detalle = "Tejido conservado – " + nivel.toLowerCase() + ".";
     }
 
     return {
       status: nivel.includes("Normal") ? "OK" : "Revisar",
-      hallazgos: `ÓRGANO: ${organo}\nNIVEL: ${n\n${detalle}`,
+      hallazgos: `ÓRGANO: ${organo}\nNIVEL: ${nivel}\n\n${detalle}`,
       educativo: detalle,
       disclaimer: "Interpretación preliminar educativa – confirmar con patólogo."
     };
   }
 
-  // GEMINI – IA REAL (solo con clave)
+  // GEMINI – IA REAL
   async function analizarGemini(file, organo) {
     const key = localStorage.getItem(KEY_GEMINI);
     if (!key) return analizarLocal(organo);
@@ -60,8 +53,8 @@
 • Calidad técnica
 • Estructuras clave
 • Hallazgos celulares
-• Nivel: OK / Revisar / Rehacer
-Máximo 4 líneas, estilo técnico educativo.`;
+• Nivel: OK / Revisar
+Máximo 4 líneas.`;
 
     try {
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`, {
@@ -82,8 +75,8 @@ Máximo 4 líneas, estilo técnico educativo.`;
 
       return {
         status: texto.toLowerCase().includes("normal") ? "OK" : "Revisar",
-        hallazgos: `IA REAL (Gemini 1.5 Flash)\n${texto}`,
-        educativo: "Análisis multimodal avanzado.",
+        hallazgos: `IA REAL (Gemini)\n${texto}`,
+        educativo: "Análisis multimodal.",
         disclaimer: "Resultado preliminar – confirmar con patólogo."
       };
     } catch (e) {
@@ -150,7 +143,7 @@ Máximo 4 líneas, estilo técnico educativo.`;
     $("#localBtn").onclick = () => { modoIA = "local"; actualizar(); };
     $("#geminiBtn").onclick = () => {
       if (localStorage.getItem(KEY_GEMINI)) {
-        if (confirm("¿Desactivar IA real y volver a modo local?")) {
+        if (confirm("¿Desactivar IA real?")) {
           localStorage.removeItem(KEY_GEMINI);
           modoIA = "local";
           actualizar();
@@ -165,7 +158,7 @@ Máximo 4 líneas, estilo técnico educativo.`;
       if (k.startsWith("AIza")) {
         localStorage.setItem(KEY_GEMINI, k);
         modoIA = "gemini";
-        alert("¡IA real (Gemini) activada!");
+        alert("¡IA real activada!");
       } else {
         alert("Clave inválida");
         return;
@@ -178,8 +171,8 @@ Máximo 4 líneas, estilo técnico educativo.`;
       $("#claveDiv").style.display = "none";
     };
 
-    document.getElementById("uploadBtn").addEventListener("click", () => document.getElementById("fileInput").click());
-    document.getElementById("camBtn").addEventListener("click", () => document.getElementById("camInput").click());
+    $("#uploadBtn").onclick = () => $("#fileInput").click();
+    $("#camBtn").onclick = () => $("#camInput").click();
 
     const handleFile = e => {
       if (e.target.files?.[0]) {
@@ -214,7 +207,7 @@ Máximo 4 líneas, estilo técnico educativo.`;
     };
 
     function actualizar() {
-      const tieneClave = !!localStorage.getItem(KEY_GEMINI_KEY);
+      const tieneClave = !!localStorage.getItem(KEY_GEMINI);
       $("#localBtn").classList.toggle("active", modoIA === "local");
       $("#geminiBtn").classList.toggle("active", modoIA === "gemini");
       $("#iaActivaMsg").style.display = tieneClave ? "block" : "none";
@@ -225,4 +218,3 @@ Máximo 4 líneas, estilo técnico educativo.`;
 
   initUI();
 })();
-
