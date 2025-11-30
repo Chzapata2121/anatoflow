@@ -25,7 +25,6 @@
     .tab { display:none; }
     .tab.active { display:block; }
 
-    /* MENÚ INFERIOR – SCROLL PERFECTO EN MÓVIL */
     nav {
       position:fixed;
       bottom:0;
@@ -68,6 +67,7 @@
 
 <div class="container">
 
+  <!-- DATOS DE LA MUESTRA -->
   <div id="home" class="tab active">
     <div class="card">
       <h2>Datos de la Muestra</h2>
@@ -85,39 +85,71 @@
       <select id="organo" required>
         <option value="">Seleccionar órgano...</option>
         <optgroup label="Cabeza y Cuello">
-          <option>Cerebro</option><option>Ojos</option><option>Oídos</option><option>Lengua</option>
-          <option>Tiroides</option><option>Laringe</option><option>Glándulas salivales</option>
+          <option>Cerebro</option>
+          <option>Ojos</option>
+          <option>Oídos</option>
+          <option>Lengua</option>
+          <option>Tiroides</option>
+          <option>Laringe</option>
+          <option>Glándulas salivales</option>
         </optgroup>
         <optgroup label="Tórax">
-          <option>Corazón</option><option>Pulmones</option><option>Esófago</option><option>Timo</option><option>Mama</option>
+          <option>Corazón</option>
+          <option>Pulmones</option>
+          <option>Esófago</option>
+          <option>Timo</option>
+          <option>Mama</option>
         </optgroup>
         <optgroup label="Abdomen">
-          <option>Estómago</option><option>Hígado</option><option>Páncreas</option>
-          <option>Vesícula Biliar</option><option>Bazo</option><option>Intestino Delgado</option>
-          <option>Colon</option><option>Recto</option><option>Apéndice</option>
-          <option>Riñones</option><option>Glándulas Suprarrenales</option>
+          <option>Estómago</option>
+          <option>Hígado</option>
+          <option>Páncreas</option>
+          <option>Vesícula Biliar</option>
+          <option>Bazo</option>
+          <option>Intestino Delgado</option>
+          <option>Intestino Grueso</option>
+          <option>Colon</option>
+          <option>Recto</option>
+          <option>Apéndice</option>
+          <option>Riñones</option>
+          <option>Glándulas Suprarrenales</option>
         </optgroup>
         <optgroup label="Pelvis">
-          <option>Vejiga</option><option>Útero</option><option>Ovarios</option>
-          <option>Próstata</option><option>Testículos</option>
+          <option>Vejiga</option>
+          <option>Útero</option>
+          <option>Ovarios</option>
+          <option>Próstata</option>
+          <option>Testículos</option>
         </optgroup>
         <optgroup label="Otros tejidos">
-          <option>Piel</option><option>Linfonodo</option><option>Médula ósea</option>
-          <option>Tejido adiposo</option><option>Músculo esquelético</option><option>Hueso</option>
+          <option>Piel</option>
+          <option>Linfonodo</option>
+          <option>Médula ósea</option>
+          <option>Tejido adiposo</option>
+          <option>Músculo esquelético</option>
+          <option>Hueso</option>
+          <option>Líquido cefalorraquídeo</option>
+          <option>Sangre periférica</option>
         </optgroup>
       </select>
 
       <label>Tipo de muestra <span class="required">*</span></label>
       <select id="tipoMuestra" required>
         <option value="">Seleccionar...</option>
-        <option>Biopsia</option><option>Pieza quirúrgica</option><option>Citología</option><option>Autopsia</option>
+        <option>Biopsia</option>
+        <option>Pieza quirúrgica</option>
+        <option>Citología</option>
+        <option>Autopsia</option>
       </select>
 
       <label>Condición de llegada <span class="required">*</span></label>
       <select id="condicion" required>
         <option value="">Seleccionar...</option>
-        <option>Formol al 10%</option><option>Fresco</option><option>Congelado</option>
-        <option>Parafina</option><option>Otro</option>
+        <option>Formol al 10%</option>
+        <option>Fresco</option>
+        <option>Congelado</option>
+        <option>Parafina</option>
+        <option>Otro</option>
       </select>
 
       <label>Notas clínicas / Comentario</label>
@@ -131,59 +163,11 @@
     </div>
   </div>
 
+  <!-- PESTAÑAS VACÍAS -->
   <div id="protocolos" class="tab container"><div class="card"><h2>Protocolos</h2>Cargando…</div></div>
   <div id="timer" class="tab container"><div class="card"><h2>Timer</h2>Cargando…</div></div>
   <div id="inventario" class="tab container"><div class="card"><h2>Inventario</h2>Cargando…</div></div>
-  <div id="ia" class="tab container">
-  <div class="card">
-    <h2>Analizador IA</h2>
-    <p style="text-align:center">Sube o fotografía el corte histológico</p>
-
-    <div style="text-align:center;margin:2rem 0">
-      <strong>Modo activo:</strong><br><br>
-      <div style="display:flex;flex-direction:column;gap:1.5rem;align-items:center">
-        <button id="localBtn" class="modoBtn active" style="width:90%;padding:1.5rem;font-size:1.3rem;border-radius:16px;background:#e0e7ff;border:3px solid #6366f1">
-          <span style="font-size:3rem">📴</span><br>
-          <strong style="font-size:1.4rem;color:#4338ca">LOCAL</strong><br>
-          <small style="color:#6366f1">Offline · Siempre funciona</small>
-        </button>
-        <button id="geminiBtn" class="modoBtn" style="width:90%;padding:1.5rem;font-size:1.3rem;border-radius:16px;background:#f0fdf4;border:3px solid #10b981">
-          <span style="font-size:3rem">🌐</span><br>
-          <strong style="font-size:1.4rem;color:#166534">GEMINI</strong><br>
-          <small style="color:#16a34a">IA real · Solo con clave</small>
-        </button>
-      </div>
-    </div>
-
-    <div id="iaActivaMsg" style="display:none;text-align:center;margin:2rem 0;padding:1.2rem;background:#ecfdf5;border-radius:12px;border:2px solid #10b981;color:#166534;font-weight:bold;font-size:1.2rem">
-      ✓ IA real (Gemini) activada
-    </div>
-
-    <div id="claveDiv" style="display:none;margin:2rem 0">
-      <input type="password" id="geminiInput" placeholder="Pega tu clave Gemini AIza..." style="width:100%;padding:1.2rem;border-radius:12px;border:1px solid #cbd5e1;font-size:1.1rem">
-      <div style="margin-top:1rem;text-align:center">
-        <button id="saveKeyBtn" style="padding:0.8rem 2rem">Activar IA real</button>
-        <button id="cancelKeyBtn" style="background:#6b7280;color:white;margin-left:1rem;padding:0.8rem 2rem">Cancelar</button>
-      </div>
-    </div>
-
-    <div style="display:flex;gap:2rem;justify-content:center;margin:3rem 0;flex-wrap:wrap">
-      <button id="uploadBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">Subir imagen</button>
-      <button id="camBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">Cámara</button>
-    </div>
-
-    <input type="file" id="fileInput" accept="image/*" style="display:none">
-    <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none">
-
-    <div id="preview" style="text-align:center;margin:2rem 0"></div>
-
-    <div style="text-align:center;margin:2rem 0">
-      <button id="analyzeBtn" disabled style="padding:1.5rem 4rem;font-size:1.5rem;border-radius:20px;background:#1e40af;color:white">Analizar</button>
-    </div>
-
-    <div id="result" style="margin-top:1rem"></div>
-  </div>
-</div>
+  <div id="ia" class="tab container"><div class="card"><h2>Analizador IA</h2>Cargando…</div></div>
   <div id="informe" class="tab container"><div class="card"><h2>Informe</h2>Cargando…</div></div>
 </div>
 
@@ -201,8 +185,10 @@
 </nav>
 
 <script>
-// 1. FUNCIÓN GUARDAR DATOS Y CONTINUAR (Asignada al onclick del botón)
-// Definida aquí para que esté disponible globalmente antes de la carga de ui.js
+// Fecha automática
+document.getElementById('fechaEntrada').value = new Date().toLocaleString('es-ES');
+
+// GUARDAR DATOS – SIN ERRORES
 function guardarDatosMuestra() {
   const organo = document.getElementById("organo").value || "No indicado";
 
@@ -222,32 +208,4 @@ function guardarDatosMuestra() {
     return;
   }
 
-  // Clave de localStorage
-  localStorage.setItem("anatoflow_muestra_v22", JSON.stringify(datos));
-  document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
-  document.getElementById("msgMuestra").style.color = "#10b981";
-
-  // Llamar a la función de navegación expuesta por ui.js
-  if (window.AnatoFlowUI && typeof window.AnatoFlowUI.setActiveTab === 'function') {
-      window.AnatoFlowUI.setActiveTab("protocolos");
-  } else {
-      // Fallback básico si AnatoFlowUI no se ha cargado
-      document.getElementById("protocolos").classList.add('active');
-      document.querySelector("#home").classList.remove('active');
-  }
-  window.scrollTo({top:0,behavior:'smooth'}); 
-}
-
-// 2. Ejecutar la función de Fecha automática
-document.getElementById('fechaEntrada').value = new Date().toLocaleString('es-ES');
-</script>
-
-<script src="js/ui.js"></script>
-<script src="js/protocols.js"></script>
-<script src="js/timer.js"></script>
-<script src="js/inventory.js"></script>
-<script src="js/ai-final.js"></script>
-<script src="js/report.js"></script>
-
-</body>
-</html>
+  local
