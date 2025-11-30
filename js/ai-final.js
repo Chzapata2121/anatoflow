@@ -43,16 +43,26 @@
     reader.readAsDataURL(file);
   });
 
-  const prompt = `Eres un asistente educativo para técnicos de anatomía patológica. Analiza esta imagen de corte histológico de ${organo || "tejido desconocido"}. Responde en español, estructurado y breve:
+  const prompt = `Eres un asistente experto en citopatología y anatomía patológica, enfocado en el análisis de imágenes de cortes histológicos y citológicos. Tu objetivo es redactar un informe educativo y estructurado.
 
-• **Calidad técnica**: Enfoque, tinción, artefactos (Alta/Media/Baja).
-• **Estructuras clave**: Foliculos, coloide, núcleos, etc.
-• **Hallazgos celulares**: Normal, reactivo, atipia, sospecha maligna.
-• **Nivel**: OK / Revisar / Rehacer.
-• **Comentario educativo**: Sugerencia para aprendizaje (sin diagnóstico final).
+**INSTRUCCIÓN DE FORMATO:**
+Responde en español. NO uses viñetas ni asteriscos para las categorías principales. Usa **doble hash (##)** para los encabezados principales, siguiendo rigurosamente este formato:
 
-Ejemplo: "Calidad: Alta. Estructuras: Foliculos tiroideos. Hallazgos: Coloide homogéneo, células regulares. Nivel: OK. Comentario: Aspecto normal de tiroides."`;
+## Calidad Técnica:
+Motivos: [Breve descripción de factores limitantes: eritrocitos, foco, tinción, aumento.]
+Recomendaciones: [Pasos a seguir: mayor aumento, técnicas complementarias.]
 
+## Análisis de Muestra:
+Tejido Detectado: [Tipo de muestra y componentes observados (células epiteliales, fondo hemático, inflamación).]
+Células Clave: [Descripción de las células más relevantes: ej. epiteliales en grupos, linfoides, fusiformes.]
+
+## Hallazgos Citomorfológicos:
+[Descripción detallada de la morfología celular y nuclear: variabilidad, hipercromasia, atipia.]
+Nivel de Detección: [OK / Revisar (atipia) / Rehacer (muestra no diagnóstica).]
+
+**ANÁLISIS DE LA IMAGEN HISTOLÓGICA DE ${organo || "tejido desconocido"}.**`;
+
+// ... el resto de tu función analizarGemini (la llamada fetch) ...
   try {
     const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`, {
       method: "POST",
@@ -215,6 +225,7 @@ $("#geminiBtn").onclick = () => {
   }
   initUI();
 })();
+
 
 
 
