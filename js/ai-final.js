@@ -88,9 +88,16 @@ Nivel de Detección: [OK / Revisar (atipia) / Rehacer (muestra no diagnóstica).
       educativo: "Análisis multimodal educativo.",
       disclaimer: "Sugerencia preliminar – confirmar con patólogo."
     };
-  } catch (e) {
-    return { status: "Error", hallazgos: "Error temporal – modo local activo. Verifica clave Gemini." };
-  }
+  // Dentro de analizarGemini (CORREGIDO)
+} catch (e) {
+  console.error("Fallo la llamada a Gemini:", e); // Opcional pero util
+  return { 
+    status: "Error", 
+    hallazgos: "Error temporal – modo local activo. Verifica clave Gemini.",
+    educativo: "No disponible en modo local.", // <-- ¡Añadir este!
+    disclaimer: "Fallo de comunicación con la IA. El modo local no proporciona análisis educativo.", // <-- ¡Añadir este!
+  };
+}
 }
   function initUI() {
     const c = document.getElementById("ia");
@@ -225,6 +232,7 @@ $("#geminiBtn").onclick = () => {
   }
   initUI();
 })();
+
 
 
 
