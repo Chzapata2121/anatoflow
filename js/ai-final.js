@@ -86,28 +86,45 @@ Ejemplo: "Calidad: Alta. Estructuras: Foliculos tiroideos. Hallazgos: Coloide ho
     const c = document.getElementById("ia");
     if (!c || c.querySelector("#aiOK")) return;
 
-    c.innerHTML = `
+            c.innerHTML = `
       <div class="card" id="aiOK">
         <h2>Analizador IA</h2>
-        <p style="text-align:center">Sube o fotografía el corte histológico</p>
+        <p style="text-align:center;font-size:1.1rem;margin-bottom:2rem">Sube o fotografía el corte histológico</p>
 
-        <div style="text-align:center;margin:2rem 0">
-          <strong>Modo activo:</strong><br><br>
-          <button id="localBtn" class="modoBtn active">Local (offline)</button>
-          <button id="geminiBtn" class="modoBtn">Gemini (IA real)</button>
+        <!-- MODO -->
+        <div style="margin:2rem 0">
+          <p style="text-align:center;font-weight:600;margin-bottom:1rem">Modo activo:</p>
+          <div style="display:flex;flex-direction:column;gap:1.5rem;align-items:center">
+            <button id="localBtn" class="modoBtn active" style="width:90%;max-width:400px;padding:1.5rem;font-size:1.3rem;border-radius:16px;background:#e0e7ff;border:3px solid #6366f1">
+              <span style="font-size:3rem">📴</span><br>
+              <strong style="font-size:1.4rem;color:#4338ca">LOCAL</strong><br>
+              <small style="color:#6366f1">Offline · Siempre funciona</small>
+            </button>
+            <button id="geminiBtn" class="modoBtn" style="width:90%;max-width:400px;padding:1.5rem;font-size:1.3rem;border-radius:16px;background:#f0fdf4;border:3px solid #10b981">
+              <span style="font-size:3rem">🌐</span><br>
+              <strong style="font-size:1.4rem;color:#166534">GEMINI</strong><br>
+              <small style="color:#16a34a">IA real · Solo con clave</small>
+            </button>
+          </div>
         </div>
 
-        <div id="claveDiv" style="display:none;margin:2rem 0">
-          <input type="password" id="geminiInput" placeholder="Pega tu clave Gemini AIza..." style="width:100%;padding:1rem;border-radius:12px">
+        <!-- CLAVE -->
+        <div id="claveDiv" style="display:none;margin:2rem 0;width:90%;max-width:400px;margin-left:auto;margin-right:auto">
+          <input type="password" id="geminiInput" placeholder="Pega tu clave Gemini AIza..." style="width:100%;padding:1.2rem;border-radius:12px;border:1px solid #cbd5e1;font-size:1.1rem">
           <div style="margin-top:1rem;text-align:center">
             <button id="saveKeyBtn">Activar IA real</button>
             <button id="removeKeyBtn" style="background:#dc2626;margin-left:1rem">Quitar clave</button>
           </div>
         </div>
 
-        <div style="display:flex;gap:2rem;justify-content:center;margin:2rem 0">
-          <button id="uploadBtn">Subir imagen</button>
-          <button id="camBtn">Cámara</button>
+        <!-- BOTONES SUBIR / CÁMARA -->
+        <div style="display:flex;gap:2rem;justify-content:center;margin:3rem 0;flex-wrap:wrap">
+          <button id="uploadBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">
+            Subir imagen
+          </button>
+          <button id="camBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">
+            Cámara
+          </button>
         </div>
 
         <input type="file" id="fileInput" accept="image/*" style="display:none">
@@ -115,7 +132,12 @@ Ejemplo: "Calidad: Alta. Estructuras: Foliculos tiroideos. Hallazgos: Coloide ho
 
         <div id="preview" style="text-align:center;margin:2rem 0"></div>
 
-        <button id="analyzeBtn" disabled style="margin:2rem 0">Analizar</button>
+        <div style="text-align:center;margin:2rem 0">
+          <button id="analyzeBtn" disabled style="padding:1.5rem 4rem;font-size:1.5rem;border-radius:20px;background:#1e40af;color:white">
+            Analizar
+          </button>
+        </div>
+
         <div id="result" style="margin-top:1rem"></div>
       </div>
     `;
@@ -184,4 +206,5 @@ Ejemplo: "Calidad: Alta. Estructuras: Foliculos tiroideos. Hallazgos: Coloide ho
 
   initUI();
 })();
+
 
