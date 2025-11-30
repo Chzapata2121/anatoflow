@@ -3,7 +3,7 @@
   "use strict";
 
   const KEY_MUESTRA = "anatoflow_muestra_v22";
-  const KEY_GEMINI = "anatoflow_gemini_key";
+  const KEY_GEMINI = "anatoflow_gemini_key"; // Nombre correcto
 
   let lastFile = null;
   let modoIA = localStorage.getItem(KEY_GEMINI) ? "gemini" : "local";
@@ -33,7 +33,7 @@
 
   // GEMINI REAL
   async function analizarGemini(file, organo) {
-  const key = localStorage.getItem(KEY_GEMINI_KEY);
+  const key = localStorage.getItem(KEY_GEMINI);
   if (!key) return analizarLocal(organo);
 
   const reader = new FileReader();
@@ -215,6 +215,7 @@ $("#geminiBtn").onclick = () => {
   }
   initUI();
 })();
+
 
 
 
