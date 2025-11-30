@@ -123,20 +123,9 @@
   }
 
   function bindFab() {
-    // Usamos el id del botón de la flecha que tienes en tu HTML
     const fab = $(".fab"); 
     if (!fab) return;
     ensureFabMenu();
-
-    // No hay un FAB en el HTML que se llame fab-menu, por lo que usaremos el que sube
-    // Pero la lógica de tu FAB que sube es para el scroll, así que desactivamos el menú FAB
-    // y solo mantenemos el scroll para evitar que falle.
-
-    // bindFab original:
-    // const fab = document.getElementById("fab-menu");
-    // if (!fab) return;
-    // ensureFabMenu();
-    // fab.addEventListener("click", () => toggleFab());
   }
 
   // ---------- Service Worker ----------
@@ -157,52 +146,6 @@
     });
   }
 
-  // ---------- Funciones Globales (Para llamar desde el HTML) ----------
-
-  // 1. Asignar fecha de entrada (llamada al inicio en init)
-  function setFechaEntrada() {
-    const fechaInput = document.getElementById('fechaEntrada');
-    if (fechaInput) {
-      fechaInput.value = new Date().toLocaleString('es-ES');
-    }
-  }
-
-  // 2. FUNCIÓN GUARDAR DATOS Y CONTINUAR (EXPORTADA GLOBALMENTE)
-  window.guardarDatosMuestra = function() {
-    const organo = document.getElementById("organo").value || "No indicado";
-
-    const datos = {
-      codigo: document.getElementById('codigoMuestra').value.trim(),
-      tecnico: document.getElementById('tecnico').value.trim(),
-      fecha: document.getElementById('fechaEntrada').value,
-      organo: organo,
-      tipo: document.getElementById('tipoMuestra').value,
-      condicion: document.getElementById('condicion').value,
-      notas: document.getElementById('notas').value.trim(),
-      guardadoEn: new Date().toISOString()
-    };
-
-    if (!datos.codigo || !datos.tecnico || datos.organo === "No indicado" || !datos.tipo || !datos.condicion) {
-      alert("Por favor completa todos los campos obligatorios");
-      return;
-    }
-
-    // Clave de localStorage para los datos de la muestra (coincide con tu script JS)
-    localStorage.setItem("anatoflow_muestra_v22", JSON.stringify(datos));
-    document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
-    document.getElementById("msgMuestra").style.color = "#10b981";
-
-    // Llamar a la función de navegación expuesta
-    if (window.AnatoFlowUI && typeof window.AnatoFlowUI.setActiveTab === 'function') {
-        window.AnatoFlowUI.setActiveTab("protocolos");
-    } else {
-        // Fallback si la UI no se ha inicializado completamente
-        setActiveTab("protocolos");
-    }
-    window.scrollTo({top:0,behavior:'smooth'}); 
-  };
-
-
   // ---------- Init ----------
   function init() {
     loadTheme();
@@ -210,7 +153,7 @@
     bindFab();
     restoreLastTab();
     registerSW();
-    setFechaEntrada(); // <-- Llamar a la función de fecha aquí
+    // La función de fecha y guardar ya no están aquí para evitar conflictos.
   }
 
   // Exponer utilidades mínimas para otros módulos
