@@ -201,30 +201,10 @@
 </nav>
 
 <script>
-// Función para manejo de pestañas
-function navigateToTab(tabId) {
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.classList.remove('active');
-    });
-    document.getElementById(tabId).classList.add('active');
-    
-    document.querySelectorAll('nav button').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    document.querySelector(`nav button[data-tab="${tabId}"]`).classList.add('active');
-}
-
-// Lógica de navegación para el menú inferior
-document.querySelectorAll('nav button').forEach(button => {
-    button.addEventListener('click', function() {
-        navigateToTab(this.getAttribute('data-tab'));
-    });
-});
-
 // Función Fecha automática
 document.getElementById('fechaEntrada').value = new Date().toLocaleString('es-ES');
 
-// 💾 FUNCIÓN GUARDAR DATOS Y CONTINUAR (Asignada al onclick)
+// 💾 FUNCIÓN GUARDAR DATOS Y CONTINUAR (Asignada al onclick del botón)
 function guardarDatosMuestra() {
   const organo = document.getElementById("organo").value || "No indicado";
 
@@ -239,19 +219,27 @@ function guardarDatosMuestra() {
     guardadoEn: new Date().toISOString()
   };
 
+  // Validación de campos obligatorios
   if (!datos.codigo || !datos.tecnico || datos.organo === "No indicado" || !datos.tipo || !datos.condicion) {
     alert("Por favor completa todos los campos obligatorios");
     return;
   }
 
-  // Clave de localStorage para los datos de la muestra
+  // Clave de localStorage para los datos de la muestra (coincide con tu script JS)
   localStorage.setItem("anatoflow_muestra_v22", JSON.stringify(datos));
   document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
   document.getElementById("msgMuestra").style.color = "#10b981";
 
-  // Pasar a Protocolos usando la función de navegación
-  navigateToTab("protocolos");
-  window.scrollTo({top:0,behavior:'smooth'}); // Regresar arriba de la nueva pestaña
+  // *CRÍTICO*: Llamar a la función de navegación expuesta por js/ui.js
+  if (window.AnatoFlowUI && typeof window.AnatoFlowUI.setActiveTab === 'function') {
+      window.AnatoFlowUI.setActiveTab("protocolos");
+  } else {
+      // Fallback básico si AnatoFlowUI no se ha cargado todavía (debería ser raro)
+      console.warn("AnatoFlowUI no cargado, usando fallback de tab.");
+      document.getElementById("protocolos").classList.add('active');
+      document.querySelector("#home").classList.remove('active');
+  }
+  window.scrollTo({top:0,behavior:'smooth'}); 
 }
 </script>
 
