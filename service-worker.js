@@ -1,17 +1,21 @@
 const CACHE_NAME = 'anatoflow-v22-cache';
 const urlsToCache = [
-  // ⭐️ Incluir explícitamente la raíz '/' como App Shell
+  // Archivos App Shell para el inicio sin conexión
   '/', 
   '/index.html',
   '/manifest.json',
+
+  // Archivos JavaScript
   '/js/ui.js',
   '/js/protocols.js',
   '/js/timer.js',
   '/js/inventory.js',
-  '/js/ai-final.js', // ⭐️ Cambiado de /js/ai.js a /js/ai-final.js
+  '/js/ai-final.js', // ⭐️ Ruta corregida
   '/js/report.js',
-  '/assets/icon-192.png',
-  '/assets/icon-512.png'
+
+  // Archivos de Íconos (rutas forzadas para actualización)
+  '/assets/icon-192.png?v=2', // ⭐️ Ruta corregida para forzar la actualización del ícono
+  '/assets/icon-512.png?v=2'  // ⭐️ Ruta corregida para forzar la actualización del ícono
 ];
 
 self.addEventListener('install', event => {
@@ -28,31 +32,31 @@ self.addEventListener('install', event => {
 });
 
 self.addEventListener('fetch', event => {
-  // ⭐️ ESTRATEGIA: Cache-First, con Fallback de App Shell para navegación
+  // Estrategia: Cache-First, con Fallback de App Shell para navegación
   
   event.respondWith(
     caches.match(event.request)
       .then(response => {
-        // 1. Si está en caché (Cache-First), devolver respuesta
+        // 1. Si está en caché, devolver respuesta
         if (response) {
           return response;
         }
 
-        // 2. Si no está en caché, ir a la red (si hay conexión)
+        // 2. Si no está en caché, ir a la red
         return fetch(event.request).catch(() => {
           // 3. Fallback: Si falla la red (offline), y la solicitud es de navegación, 
           //    servir el App Shell (index.html)
           if (event.request.mode === 'navigate') {
             return caches.match('/index.html');
           }
-          // Para otros recursos (imágenes, fuentes), devolver una respuesta de error.
+          // Para otros recursos, simplemente lanzamos un error (indicando que no se pudo obtener)
           throw new Error('Recurso no encontrado en caché ni en red.');
         });
       })
   );
 });
 
-// Opcional: Limpieza de cachés antiguas (Mejora la actualización)
+// Opcional: Limpieza de cachés antiguas
 self.addEventListener('activate', event => {
   const cacheWhitelist = [CACHE_NAME];
   event.waitUntil(
