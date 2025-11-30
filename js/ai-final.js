@@ -198,20 +198,24 @@ Ejemplo: "Calidad: Alta. Estructuras: Foliculos tiroideos. Hallazgos: Coloide ho
     };
 
         function actualizar() {
-      const tieneClave = !!localStorage.getItem(KEY_GEMINI_KEY);
-      $("#localBtn").classList.toggle("active", modoIA === "local");
-      $("#geminiBtn").classList.toggle("active", modoIA === "gemini");
-      
-      // Mostrar/ocultar recuadro clave
-      $("#claveDiv").style.display = tieneClave ? "none" : "block";
-      
-      // Mostrar mensaje "IA real activada" si hay clave
-      $("#iaActivaMsg").style.display = tieneClave ? "block" : "none";
-    }
+  const tieneClave = !!localStorage.getItem(KEY_GEMINI_KEY);
+  $("#localBtn").classList.toggle("active", modoIA === "local");
+  $("#geminiBtn").classList.toggle("active", modoIA === "gemini");
+  
+  $("#claveDiv").style.display = "none";
+  $("#iaActivaMsg").style.display = tieneClave ? "block" : "none";
+}
+
+// Al pulsar Gemini, mostrar recuadro clave
+$("#geminiBtn").onclick = () => {
+  $("#claveDiv").style.display = "block";
+  $("#iaActivaMsg").style.display = "none";
+};
     actualizar();
   }
   initUI();
 })();
+
 
 
 
