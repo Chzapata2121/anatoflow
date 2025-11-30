@@ -2,25 +2,24 @@
   "name": "AnatoFlow v22 PRO",
   "short_name": "AnatoFlow",
   "description": "Asistente digital para Técnicos de Anatomía Patológica",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": "./",  // ⭐️ CRUCIAL: Usamos "./" (misma carpeta) o "/anatoflow/"
+  "scope": "./",      // ⭐️ CRUCIAL: Usamos "./"
   "display": "standalone",
   "background_color": "#f5f6fa",
   "theme_color": "#1e40af",
   "orientation": "portrait-primary",
   "icons": [
     {
-      "src": "/assets/icon-192.png?",
+      "src": "assets/icon-192.png", // ⭐️ RUTA CORREGIDA: Sin la barra inicial '/'
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "maskable any"
     },
     {
-      "src": "/assets/icon-512.png?",
+      "src": "assets/icon-512.png", // ⭐️ RUTA CORREGIDA: Sin la barra inicial '/'
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable any"
     }
   ]
 }
-
