@@ -178,8 +178,8 @@ Máximo 4 líneas, estilo técnico educativo.`;
       $("#claveDiv").style.display = "none";
     };
 
-    $("#uploadBtn").onclick = () => $("#fileInput").click();
-    $("#camBtn").onclick = () => $("#camInput").click();
+    document.getElementById("uploadBtn").addEventListener("click", () => document.getElementById("fileInput").click());
+    document.getElementById("camBtn").addEventListener("click", () => document.getElementById("camInput").click());
 
     const handleFile = e => {
       if (e.target.files?.[0]) {
@@ -225,3 +225,4 @@ Máximo 4 líneas, estilo técnico educativo.`;
 
   initUI();
 })();
+
