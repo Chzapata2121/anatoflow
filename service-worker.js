@@ -14,8 +14,8 @@ const urlsToCache = [
   '/js/report.js',
 
   // Archivos de Íconos (rutas forzadas para actualización)
-  '/assets/icon-192.png?v=2', // ⭐️ Ruta corregida para forzar la actualización del ícono
-  '/assets/icon-512.png?v=2'  // ⭐️ Ruta corregida para forzar la actualización del ícono
+  '/assets/icon-192.png', // ⭐️ Ruta corregida para forzar la actualización del ícono
+  '/assets/icon-512.png'  // ⭐️ Ruta corregida para forzar la actualización del ícono
 ];
 
 self.addEventListener('install', event => {
@@ -71,3 +71,4 @@ self.addEventListener('activate', event => {
     })
   );
 });
+
