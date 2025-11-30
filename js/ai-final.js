@@ -6,7 +6,8 @@
   const KEY_GEMINI = "anatoflow_gemini_key"; // Nombre correcto
 
   let lastFile = null;
-  let modoIA = localStorage.getItem(KEY_GEMINI) ? "gemini" : "local";
+  // CORRECCIÓN: Usar KEY_GEMINI en la inicialización
+  let modoIA = localStorage.getItem(KEY_GEMINI) ? "gemini" : "local"; 
 
   const $ = s => document.querySelector(s);
 
@@ -33,17 +34,17 @@
 
   // GEMINI REAL
   async function analizarGemini(file, organo) {
-  const key = localStorage.getItem(KEY_GEMINI);
-  if (!key) return analizarLocal(organo);
+    const key = localStorage.getItem(KEY_GEMINI); // Uso correcto de la clave
+    if (!key) return analizarLocal(organo);
 
-  const reader = new FileReader();
-  const base64 = await new Promise((resolve, reject) => {
-    reader.onload = e => resolve(e.target.result.split(',')[1]);
-    reader.onerror = reject;
-    reader.readAsDataURL(file);
-  });
+    const reader = new FileReader();
+    const base64 = await new Promise((resolve, reject) => {
+      reader.onload = e => resolve(e.target.result.split(',')[1]);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
 
-  const prompt = `Eres un asistente experto en citopatología y anatomía patológica, enfocado en el análisis de imágenes de cortes histológicos y citológicos. Tu objetivo es redactar un informe educativo y estructurado.
+    const prompt = `Eres un asistente experto en citopatología y anatomía patológica, enfocado en el análisis de imágenes de cortes histológicos y citológicos. Tu objetivo es redactar un informe educativo y estructurado.
 
 **INSTRUCCIÓN DE FORMATO:**
 Responde en español. NO uses viñetas ni asteriscos para las categorías principales. Usa **doble hash (##)** para los encabezados principales, siguiendo rigurosamente este formato:
@@ -62,56 +63,52 @@ Nivel de Detección: [OK / Revisar (atipia) / Rehacer (muestra no diagnóstica).
 
 **ANÁLISIS DE LA IMAGEN HISTOLÓGICA DE ${organo || "tejido desconocido"}.**`;
 
-// ... el resto de tu función analizarGemini (la llamada fetch) ...
-  try {
-    // CORREGIDO: Eliminar "-latest" del nombre del modelo
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
-// ...
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        contents: [{
-          parts: [
-            { text: prompt },
-            { inline_data: { mime_type: file.type, data: base64 } }
-          ]
-        }]
-      })
-    });
+    try {
+      // CORREGIDO: URL del modelo y estructura de fetch
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [{
+            parts: [
+              { text: prompt },
+              { inline_data: { mime_type: file.type, data: base64 } }
+            ]
+          }]
+        })
+      });
 
-    if (!res.ok) throw new Error("Error Gemini");
+      if (!res.ok) throw new Error("Error Gemini: " + res.status); // Añadido status para mejor debug
 
-    const data = await res.json();
-    const texto = data.candidates[0].content.parts[0].text.trim();
+      const data = await res.json();
+      const texto = data.candidates[0].content.parts[0].text.trim();
 
-    return {
-      status: texto.includes("OK") ? "OK" : texto.includes("Revisar") ? "Revisar" : "Rehacer",
-      hallazgos: `IA REAL (Gemini 1.5 Flash)\n${texto}`,
-      educativo: "Análisis multimodal educativo.",
-      disclaimer: "Sugerencia preliminar – confirmar con patólogo."
-    };
-  // Dentro de analizarGemini (CORREGIDO)
-} catch (e) {
-  console.error("Fallo la llamada a Gemini:", e); // Opcional pero util
-  return { 
-    status: "Error", 
-    hallazgos: "Error temporal – modo local activo. Verifica clave Gemini.",
-    educativo: "No disponible en modo local.", // <-- ¡Añadir este!
-    disclaimer: "Fallo de comunicación con la IA. El modo local no proporciona análisis educativo.", // <-- ¡Añadir este!
-  };
-}
-}
+      return {
+        status: texto.includes("OK") ? "OK" : texto.includes("Revisar") ? "Revisar" : "Rehacer",
+        hallazgos: `IA REAL (Gemini 1.5 Flash)\n${texto}`,
+        educativo: "Análisis multimodal educativo.",
+        disclaimer: "Sugerencia preliminar – confirmar con patólogo."
+      };
+    } catch (e) {
+      console.error("Fallo la llamada a Gemini:", e);
+      return { 
+        status: "Error", 
+        hallazgos: "Error temporal – modo local activo. Verifica clave Gemini.",
+        educativo: "No disponible en modo local.",
+        disclaimer: "Fallo de comunicación con la IA. El modo local no proporciona análisis educativo.",
+      };
+    }
+  } // <-- FIN de la función analizarGemini
+  
   function initUI() {
     const c = document.getElementById("ia");
     if (!c || c.querySelector("#aiOK")) return;
 
-            c.innerHTML = `
+    c.innerHTML = `
       <div class="card" id="aiOK">
         <h2>Analizador IA</h2>
         <p style="text-align:center;font-size:1.1rem;margin-bottom:2rem">Sube o fotografía el corte histológico</p>
 
-        <!-- MODO -->
         <div style="margin:2rem 0">
           <p style="text-align:center;font-weight:600;margin-bottom:1rem">Modo activo:</p>
           <div style="display:flex;flex-direction:column;gap:1.5rem;align-items:center">
@@ -128,7 +125,6 @@ Nivel de Detección: [OK / Revisar (atipia) / Rehacer (muestra no diagnóstica).
           </div>
         </div>
 
-        <!-- CLAVE -->
         <div id="claveDiv" style="display:none;margin:2rem 0;width:90%;max-width:400px;margin-left:auto;margin-right:auto">
           <input type="password" id="geminiInput" placeholder="Pega tu clave Gemini AIza..." style="width:100%;padding:1.2rem;border-radius:12px;border:1px solid #cbd5e1;font-size:1.1rem">
           <div style="margin-top:1rem;text-align:center">
@@ -137,7 +133,6 @@ Nivel de Detección: [OK / Revisar (atipia) / Rehacer (muestra no diagnóstica).
           </div>
         </div>
 
-        <!-- BOTONES SUBIR / CÁMARA -->
         <div style="display:flex;gap:2rem;justify-content:center;margin:3rem 0;flex-wrap:wrap">
           <button id="uploadBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">
             Subir imagen
@@ -216,30 +211,24 @@ Nivel de Detección: [OK / Revisar (atipia) / Rehacer (muestra no diagnóstica).
       $("#analyzeBtn").textContent = "Analizar";
       $("#analyzeBtn").disabled = false;
     };
+    
+    // CORREGIDO: Usar KEY_GEMINI en actualizar
+    function actualizar() {
+      const tieneClave = !!localStorage.getItem(KEY_GEMINI);
+      $("#localBtn").classList.toggle("active", modoIA === "local");
+      $("#geminiBtn").classList.toggle("active", modoIA === "gemini");
+      
+      $("#claveDiv").style.display = "none";
+      // La variable iaActivaMsg no existe en tu HTML, se oculta el div de clave
+      // $("#iaActivaMsg").style.display = tieneClave ? "block" : "none"; 
+    }
 
-        function actualizar() {
-  const tieneClave = !!localStorage.getItem(KEY_GEMINI_KEY);
-  $("#localBtn").classList.toggle("active", modoIA === "local");
-  $("#geminiBtn").classList.toggle("active", modoIA === "gemini");
-  
-  $("#claveDiv").style.display = "none";
-  $("#iaActivaMsg").style.display = tieneClave ? "block" : "none";
-}
-
-// Al pulsar Gemini, mostrar recuadro clave
-$("#geminiBtn").onclick = () => {
-  $("#claveDiv").style.display = "block";
-  $("#iaActivaMsg").style.display = "none";
-};
+    // Al pulsar Gemini, mostrar recuadro clave
+    $("#geminiBtn").onclick = () => {
+      $("#claveDiv").style.display = "block";
+      // $("#iaActivaMsg").style.display = "none"; // La variable iaActivaMsg no existe
+    };
     actualizar();
   }
   initUI();
 })();
-
-
-
-
-
-
-
-
