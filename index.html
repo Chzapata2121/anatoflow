@@ -136,7 +136,61 @@
   <div id="protocolos" class="tab container"><div class="card"><h2>Protocolos</h2>Cargando…</div></div>
   <div id="timer" class="tab container"><div class="card"><h2>Timer</h2>Cargando…</div></div>
   <div id="inventario" class="tab container"><div class="card"><h2>Inventario</h2>Cargando…</div></div>
-  <div id="ia" class="tab container"><div class="card"><h2>Analizador IA</h2>Cargando…</div></div>
+  <!-- PESTAÑA IA – VERSIÓN LIMPIA Y PROFESIONAL -->
+<div id="ia" class="tab container">
+  <div class="card">
+    <h2>Analizador IA</h2>
+    <p style="text-align:center">Sube o fotografía el corte histológico</p>
+
+    <!-- MODO -->
+    <div style="text-align:center;margin:2rem 0">
+      <strong>Modo activo:</strong><br><br>
+      <div style="display:flex;flex-direction:column;gap:1.5rem;align-items:center">
+        <button id="localBtn" class="modoBtn active" style="width:90%;padding:1.5rem;font-size:1.3rem;border-radius:16px;background:#e0e7ff;border:3px solid #6366f1">
+          <span style="font-size:3rem">📴</span><br>
+          <strong style="font-size:1.4rem;color:#4338ca">LOCAL</strong><br>
+          <small style="color:#6366f1">Offline · Siempre funciona</small>
+        </button>
+        <button id="geminiBtn" class="modoBtn" style="width:90%;padding:1.5rem;font-size:1.3rem;border-radius:16px;background:#f0fdf4;border:3px solid #10b981">
+          <span style="font-size:3rem">🌐</span><br>
+          <strong style="font-size:1.4rem;color:#166534">GEMINI</strong><br>
+          <small style="color:#16a34a">IA real · Solo con clave</small>
+        </button>
+      </div>
+    </div>
+
+    <!-- MENSAJE IA REAL ACTIVADA -->
+    <div id="iaActivaMsg" style="display:none;text-align:center;margin:2rem 0;padding:1.2rem;background:#ecfdf5;border-radius:12px;border:2px solid #10b981;color:#166534;font-weight:bold;font-size:1.2rem">
+      ✓ IA real (Gemini) activada
+    </div>
+
+    <!-- RECUADRO CLAVE – SOLO AL PULSAR GEMINI -->
+    <div id="claveDiv" style="display:none;margin:2rem 0">
+      <input type="password" id="geminiInput" placeholder="Pega tu clave Gemini AIza..." style="width:100%;padding:1.2rem;border-radius:12px;border:1px solid #cbd5e1;font-size:1.1rem">
+      <div style="margin-top:1rem;text-align:center">
+        <button id="saveKeyBtn" style="padding:0.8rem 2rem">Activar IA real</button>
+        <button id="cancelKeyBtn" style="background:#6b7280;color:white;margin-left:1rem;padding:0.8rem 2rem">Cancelar</button>
+      </div>
+    </div>
+
+    <!-- BOTONES SUBIR / CÁMARA -->
+    <div style="display:flex;gap:2rem;justify-content:center;margin:3rem 0;flex-wrap:wrap">
+      <button id="uploadBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">Subir imagen</button>
+      <button id="camBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">Cámara</button>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" style="display:none">
+    <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none">
+
+    <div id="preview" style="text-align:center;margin:2rem 0"></div>
+
+    <div style="text-align:center;margin:2rem 0">
+      <button id="analyzeBtn" disabled style="padding:1.5rem 4rem;font-size:1.5rem;border-radius:20px;background:#1e40af;color:white">Analizar</button>
+    </div>
+
+    <div id="result" style="margin-top:1rem"></div>
+  </div>
+</div>
   <div id="informe" class="tab container"><div class="card"><h2>Informe</h2>Cargando…</div></div>
 </div>
 
@@ -198,4 +252,5 @@ function guardarDatosMuestra() {
 
 </body>
 </html>
+
 
