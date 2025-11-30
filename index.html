@@ -159,6 +159,7 @@
 document.getElementById('fechaEntrada').value = new Date().toLocaleString('es-ES');
 
 // GUARDAR DATOS DE MUESTRA – SIN "OTROS"
+<script>
 function guardarDatosMuestra() {
   const organo = document.getElementById("organo").value || "No indicado";
 
@@ -182,24 +183,9 @@ function guardarDatosMuestra() {
   document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
   document.getElementById("msgMuestra").style.color = "#10b981";
 
+  // Pasar a Protocolos
   document.querySelector('[data-tab="protocolos"]').click();
 }
-
-// CARGAR DATOS GUARDADOS
-window.addEventListener('load', () => {
-  const saved = localStorage.getItem('anatoflow_muestra_v22');
-  if (saved) {
-    const d = JSON.parse(saved);
-    document.getElementById('codigoMuestra').value = d.codigo || '';
-    document.getElementById('tecnico').value = d.tecnico || '';
-    document.getElementById('organo').value = d.organo || '';
-    document.getElementById('tipoMuestra').value = d.tipo || '';
-    document.getElementById('condicion').value = d.condicion || '';
-    document.getElementById('notas').value = d.notas || '';
-    document.getElementById('msgMuestra').textContent = 'Datos cargados de sesión anterior';
-    document.getElementById('msgMuestra').style.color = '#3b82f6';
-  }
-});
 </script>
 
 <!-- TUS SCRIPTS -->
@@ -212,3 +198,4 @@ window.addEventListener('load', () => {
 
 </body>
 </html>
+
