@@ -1,4 +1,4 @@
-/* AnatoFlow v22 PRO – IA FINAL 100% FUNCIONAL (sin errores) */
+/* AnatoFlow v22 PRO – IA FINAL 100% FUNCIONAL (sin errores de sintaxis) */
 (() => {
   "use strict";
 
@@ -10,7 +10,7 @@
 
   const $ = s => document.querySelector(s);
 
-  // LOCAL – análisis educativo rico
+  // LOCAL
   function analizarLocal(organo) {
     const o = (organo || "No indicado").toLowerCase();
     const niveles = ["Normal", "Reactivo / Inflamatorio", "Atipia / Lesión bajo grado", "Sospecha de malignidad"];
@@ -18,14 +18,10 @@
 
     let detalle = "";
     if (o.includes("tiroides")) {
-      detalle = nivel === "Normal"Normal" ? "Folículos tiroideos con coloide homogéneo y abundante. Células foliculares cúbicas regulares. Sin atipia." :
-                nivel.includes("Reactivo") ? "Tiroiditis linfocítica (Hashimoto). Infiltrado linfocitario + células de Hürthle." :
-                nivel.includes("Atipia") ? "Nódulo folicular con atipia. Posible adenoma vs carcinoma folicular." :
-                "Carcinoma papilar sospechoso: núcleos en vidrio esmerilado, surcos, cuerpos de psammoma.";
-    } else if (o.includes("vejiga")) {
-      detalle = nivel === "Normal" ? "Epitelio urotelial normal." : "Carcinoma urotelial invasivo.";
-    } else if (o.includes("pulmón")) {
-      detalle = nivel === "Normal"Normal" ? "Alvéolos abiertos." : "Posible adenocarcinoma.";
+      detalle = nivel === "Normal" ? "Folículos tiroideos con coloide homogéneo y abundante. Células foliculares regulares." :
+                nivel.includes("Reactivo") ? "Tiroiditis linfocítica (Hashimoto)." :
+                nivel.includes("Atipia") ? "Nódulo folicular con atipia." :
+                "Carcinoma papilar sospechoso: núcleos en vidrio esmerilado.";
     } else {
       detalle = "Tejido conservado – " + nivel.toLowerCase() + ".";
     }
@@ -38,7 +34,7 @@
     };
   }
 
-  // GEMINI – IA REAL
+  // GEMINI
   async function analizarGemini(file, organo) {
     const key = localStorage.getItem(KEY_GEMINI);
     if (!key) return analizarLocal(organo);
@@ -49,12 +45,7 @@
       reader.readAsDataURL(file);
     });
 
-    const prompt = `Analiza esta imagen histológica de ${organo || "tejido"}. Describe en español:
-• Calidad técnica
-• Estructuras clave
-• Hallazgos celulares
-• Nivel: OK / Revisar
-Máximo 4 líneas.`;
+    const prompt = `Analiza esta imagen histológica de ${organo || "tejido"}. Responde en español, breve y técnico.`;
 
     try {
       const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`, {
@@ -159,10 +150,7 @@ Máximo 4 líneas.`;
         localStorage.setItem(KEY_GEMINI, k);
         modoIA = "gemini";
         alert("¡IA real activada!");
-      } else {
-        alert("Clave inválida");
-        return;
-      }
+      } else alert("Clave inválida");
       $("#claveDiv").style.display = "none";
       actualizar();
     };
