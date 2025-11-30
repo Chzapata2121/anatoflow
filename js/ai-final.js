@@ -9,8 +9,8 @@
   // Inicialización: si hay clave, usa 'gemini', si no, usa 'local'
   let modoIA = localStorage.getItem(KEY_GEMINI) ? "gemini" : "local"; 
 
-  const $ = s => document.querySelector(s);
-
+  // Eliminamos 'const $ = s => document.querySelector(s);' ya que usaremos getElementById.
+  
   // LOCAL (backup)
   function analizarLocal(organo) {
     const o = (organo || "No indicado").toLowerCase();
@@ -103,23 +103,25 @@ Nivel de Detección: [OK / Revisar (atipia) / Rehacer (muestra no diagnóstica).
   
   // Función para inicializar la UI de la pestaña IA
   function initUI() {
-    // Si los botones no existen, esta función no debería ejecutarse.
-    if (!$("#localBtn") || !$("#geminiBtn")) return; 
+    const $ia = document.getElementById("ia");
+    if (!$ia) return; // Si la pestaña IA no existe, salimos
 
+    // ⭐️ USO DE $ia.querySelector para garantizar que solo buscamos en el contenedor IA
+    
     // Enlace de eventos
-    $("#localBtn").onclick = () => { modoIA = "local"; actualizar(); };
+    $ia.querySelector("#localBtn").onclick = () => { modoIA = "local"; actualizar(); };
     
     // Al pulsar Gemini, mostrar recuadro clave (Si no tiene clave)
-    $("#geminiBtn").onclick = () => {
+    $ia.querySelector("#geminiBtn").onclick = () => {
         if (!localStorage.getItem(KEY_GEMINI)) {
-            $("#claveDiv").style.display = "block";
+            $ia.querySelector("#claveDiv").style.display = "block";
         }
         modoIA = "gemini";
         actualizar();
     };
 
-    $("#saveKeyBtn").onclick = () => {
-      const k = $("#geminiInput").value.trim();
+    $ia.querySelector("#saveKeyBtn").onclick = () => {
+      const k = $ia.querySelector("#geminiInput").value.trim();
       if (k.startsWith("AIza")) {
         localStorage.setItem(KEY_GEMINI, k);
         modoIA = "gemini";
@@ -128,37 +130,37 @@ Nivel de Detección: [OK / Revisar (atipia) / Rehacer (muestra no diagnóstica).
       actualizar();
     };
 
-    $("#removeKeyBtn").onclick = () => {
+    $ia.querySelector("#removeKeyBtn").onclick = () => {
       localStorage.removeItem(KEY_GEMINI);
       modoIA = "local";
-      $("#claveDiv").style.display = "none";
+      $ia.querySelector("#claveDiv").style.display = "none";
       actualizar();
     };
 
-    $("#uploadBtn").onclick = () => $("#fileInput").click();
-    $("#camBtn").onclick = () => $("#camInput").click();
+    $ia.querySelector("#uploadBtn").onclick = () => $ia.querySelector("#fileInput").click();
+    $ia.querySelector("#camBtn").onclick = () => $ia.querySelector("#camInput").click();
 
     const handleFile = e => {
       if (e.target.files?.[0]) {
         lastFile = e.target.files[0];
-        $("#analyzeBtn").disabled = false;
+        $ia.querySelector("#analyzeBtn").disabled = false;
         const url = URL.createObjectURL(lastFile);
-        $("#preview").innerHTML = `<img src="${url}" style="max-width:100%;max-height:500px;border-radius:12px">`;
+        $ia.querySelector("#preview").innerHTML = `<img src="${url}" style="max-width:100%;max-height:500px;border-radius:12px">`;
       }
     };
-    $("#fileInput").onchange = handleFile;
-    $("#camInput").onchange = handleFile;
+    $ia.querySelector("#fileInput").onchange = handleFile;
+    $ia.querySelector("#camInput").onchange = handleFile;
 
-    $("#analyzeBtn").onclick = async () => {
+    $ia.querySelector("#analyzeBtn").onclick = async () => {
       if (!lastFile) return;
-      $("#analyzeBtn").disabled = true;
-      $("#analyzeBtn").textContent = "Analizando...";
-      $("#result").innerHTML = ""; // Limpiar resultados anteriores
+      $ia.querySelector("#analyzeBtn").disabled = true;
+      $ia.querySelector("#analyzeBtn").textContent = "Analizando...";
+      $ia.querySelector("#result").innerHTML = ""; // Limpiar resultados anteriores
       
       const muestra = JSON.parse(localStorage.getItem(KEY_MUESTRA) || "{}");
       const result = modoIA === "gemini" ? await analizarGemini(lastFile, muestra.organo) : analizarLocal(muestra.organo);
 
-      $("#result").innerHTML = `
+      $ia.querySelector("#result").innerHTML = `
         <div style="padding:1.5rem;border-radius:12px;background:#f0fdf4;border:2px solid #10b981">
           <h3 style="color:#10b981;font-weight:700">${result.status}</h3>
           <p style="white-space:pre-line;font-weight:600">${result.hallazgos.replace('IA REAL (Gemini 1.5 Flash)\n', '')}</p>
@@ -167,20 +169,25 @@ Nivel de Detección: [OK / Revisar (atipia) / Rehacer (muestra no diagnóstica).
         </div>
       `;
 
-      $("#analyzeBtn").textContent = "Analizar";
-      $("#analyzeBtn").disabled = false;
+      $ia.querySelector("#analyzeBtn").textContent = "Analizar";
+      $ia.querySelector("#analyzeBtn").disabled = false;
     };
     
+    // Llamar a la actualización inicial después de enlazar
     actualizar();
   }
   
   // Función para actualizar el estado visual de los botones
   function actualizar() {
+    const $ia = document.getElementById("ia");
+    if (!$ia) return; // Asegurar que la pestaña exista
+    
     const tieneClave = !!localStorage.getItem(KEY_GEMINI);
-    const localBtn = $("#localBtn");
-    const geminiBtn = $("#geminiBtn");
-    const claveDiv = $("#claveDiv");
-    const iaActivaMsg = document.getElementById("iaActivaMsg");
+    
+    const localBtn = $ia.querySelector("#localBtn");
+    const geminiBtn = $ia.querySelector("#geminiBtn");
+    const claveDiv = $ia.querySelector("#claveDiv");
+    const iaActivaMsg = document.getElementById("iaActivaMsg"); // Este ID es global
     
     if (localBtn) localBtn.classList.toggle("active", modoIA === "local");
     if (geminiBtn) geminiBtn.classList.toggle("active", modoIA === "gemini");
