@@ -7,7 +7,6 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>AnatoFlow v22 PRO</title>
 
-  <!-- Manifest PWA -->
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="/assets/icon-192.png">
 
@@ -15,36 +14,64 @@
     :root { --bg: #f5f6fa; --text: #1e293b; --card: #ffffff; --primary: #1e40af; --fab: #2563eb; }
     body.dark { --bg: #0f172a; --text: #e2e8f0; --card: #1e293b; --fab: #0ea5e9; }
     body { margin:0; background:var(--bg); color:var(--text); font-family:-apple-system,system-ui,sans-serif; }
-    .container { padding:1.2rem; padding-bottom:1rem 1.2rem 6rem; }
-    .card { background:var(--card); border-radius:16px; padding:1.6rem; margin-bottom:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
+    .container { padding:1.2rem; padding-bottom:8rem; }
+    .card { background:var(--card); border-radius:16px; padding:1.8rem; margin-bottom:1.5rem; box-shadow:0 4px 20px rgba(0,0,0,0.08); }
     h1 { margin:0; font-size:2rem; color:var(--primary); text-align:center; }
     h2 { margin:0 0 1rem; color:var(--primary); }
-    input, select, textarea { width:100%; padding:1rem; margin:0.6rem 0; border-radius:12px; border:1px solid #cbd5e1; font-size:1.1rem; box-sizing:border-box; }
+    input, select, textarea { width:100%; padding:1rem; margin:0.8rem 0; border-radius:12px; border:1px solid #cbd5e1; font-size:1.1rem; box-sizing:border-box; }
     button { background:var(--primary); color:white; border:none; padding:1rem; border-radius:12px; font-size:1.1rem; font-weight:600; cursor:pointer; }
-    .fab { position:fixed; bottom:6rem; right:1.5rem; width:60px; height:60px; background:var(--fab); border-radius:50%; box-shadow:0 6px 20px rgba(37,99,235,0.4); font-size:2rem; z-index:100; }
-    nav { position:fixed; bottom:0; width:100%; background:white; border-top:1px solid #ddd; display:flex; z-index:99; }
-    nav button { flex:1; padding:1rem; border:none; background:none; font-weight:600; color:#64748b; }
-    nav button.active { color:var(--primary); border-top:4px solid var(--primary); }
+    .fab { position:fixed; bottom:6.5rem; right:1.5rem; width:60px; height:60px; background:var(--fab); border-radius:50%; box-shadow:0 6px 20px rgba(37,99,235,0.4); font-size:2rem; z-index:100; }
+    .required { color:#ef4444; }
     .tab { display:none; }
     .tab.active { display:block; }
-    .required { color:#ef4444; }
+
+    /* MENÚ INFERIOR – SCROLL PERFECTO EN MÓVIL */
+    nav {
+      position:fixed;
+      bottom:0;
+      left:0;
+      width:100%;
+      background:white;
+      border-top:1px solid #ddd;
+      z-index:999;
+      overflow-x:auto;
+      overflow-y:hidden;
+      -webkit-overflow-scrolling:touch;
+    }
+    nav::-webkit-scrollbar { display:none; }
+    nav > div {
+      display:flex;
+      min-width:max-content;
+      padding:0.5rem 0;
+    }
+    nav button {
+      flex:0 0 auto;
+      padding:1rem 1.5rem;
+      border:none;
+      background:none;
+      font-weight:600;
+      color:#64748b;
+      white-space:nowrap;
+    }
+    nav button.active {
+      color:var(--primary);
+      border-top:4px solid var(--primary);
+    }
   </style>
 </head>
-  <script>location.reload(true);</script>
 <body>
 
-<header class="card" style="text-align:center; margin-bottom:1rem;">
+<header class="card" style="text-align:center;margin-bottom:1rem">
   <h1>AnatoFlow v22 PRO</h1>
   <p>Asistente profesional para técnicos de Anatomía Patológica</p>
 </header>
 
 <div class="container">
 
-  <!-- NUEVA SECCIÓN: DATOS DE LA MUESTRA -->
+  <!-- DATOS DE LA MUESTRA -->
   <div id="home" class="tab active">
     <div class="card">
       <h2>Datos de la Muestra</h2>
-      <p style="opacity:0.8; margin-bottom:1rem;">Información obligatoria para trazabilidad y auditoría</p>
 
       <label>Nº de muestra / Código <span class="required">*</span></label>
       <input type="text" id="codigoMuestra" required placeholder="Ej: 2025-00123">
@@ -53,67 +80,85 @@
       <input type="text" id="tecnico" required placeholder="Nombre y apellidos">
 
       <label>Fecha y hora de entrada</label>
-      <input type="text" id="fechaEntrada" readonly value="Cargando...">
+      <input type="text" id="fechaEntrada" readonly>
 
       <label>Origen del tejido / Órgano <span class="required">*</span></label>
+      <select id="organo" required>
+        <option value="">Seleccionar órgano...</option>
+        <optgroup label="Cabeza y Cuello">
+          <option>Cerebro</option><option>Ojos</option><option>Oídos</option><option>Lengua</option>
+          <option>Tiroides</option><option>Laringe</option><option>Glándulas salivales</option>
+        </optgroup>
+        <optgroup label="Tórax">
+          <option>Corazón</option><option>Pulmones</option><option>Esófago</option><option>Timo</option><option>Mama</option>
+        </optgroup>
+        <optgroup label="Abdomen">
+          <option>Estómago</option><option>Hígado</option><option>Páncreas</option>
+          <option>Vesícula Biliar</option><option>Bazo</option><option>Intestino Delgado</option>
+          <option>Colon</option><option>Recto</option><option>Apéndice</option>
+          <option>Riñones</option><option>Glándulas Suprarrenales</option>
+        </optgroup>
+        <optgroup label="Pelvis">
+          <option>Vejiga</option><option>Útero</option><option>Ovarios</option>
+          <option>Próstata</option><option>Testículos</option>
+        </optgroup>
+        <optgroup label="Otros tejidos">
+          <option>Piel</option><option>Linfonodo</option><option>Médula ósea</option>
+          <option>Tejido adiposo</option><option>Músculo esquelético</option><option>Hueso</option>
+        </optgroup>
+      </select>
 
-<select id="organo" required>
-  <option value="">Seleccionar órgano...</option>
-  
-  <optgroup label="Cabeza y Cuello">
-    <option>Cerebro</option>
-    <option>Ojos</option>
-    <option>Oídos</option>
-    <option>Lengua</option>
-    <option>Tiroides</option>
-    <option>Laringe</option>
-    <option>Glándulas salivales</option>
-  </optgroup>
-  
-  <optgroup label="Tórax">
-    <option>Corazón</option>
-    <option>Pulmones</option>
-    <option>Esófago</option>
-    <option>Timo</option>
-    <option>Mama</option>
-  </optgroup>
-  
-  <optgroup label="Abdomen">
-    <option>Estómago</option>
-    <option>Hígado</option>
-    <option>Páncreas</option>
-    <option>Vesícula Biliar</option>
-    <option>Bazo</option>
-    <option>Intestino Delgado</option>
-    <option>Intestino Grueso</option>
-    <option>Colon</option>
-    <option>Recto</option>
-    <option>Apéndice</option>
-    <option>Riñones</option>
-    <option>Glándulas Suprarrenales</option>
-  </optgroup>
-  
-  <optgroup label="Pelvis">
-    <option>Vejiga</option>
-    <option>Útero</option>
-    <option>Ovarios</option>
-    <option>Próstata</option>
-    <option>Testículos</option>
-  </optgroup>
-  
-  <optgroup label="Otros tejidos">
-    <option>Piel</option>
-    <option>Linfonodo</option>
-    <option>Médula ósea</option>
-    <option>Tejido adiposo</option>
-    <option>Músculo esquelético</option>
-    <option>Hueso</option>
-    <option>Líquido cefalorraquídeo</option>
-    <option>Sangre periférica</option>
-  </optgroup>
-</select>
+      <label>Tipo de muestra <span class="required">*</span></label>
+      <select id="tipoMuestra" required>
+        <option value="">Seleccionar...</option>
+        <option>Biopsia</option><option>Pieza quirúrgica</option><option>Citología</option><option>Autopsia</option>
+      </select>
+
+      <label>Condición de llegada <span class="required">*</span></label>
+      <select id="condicion" required>
+        <option value="">Seleccionar...</option>
+        <option>Formol al 10%</option><option>Fresco</option><option>Congelado</option>
+        <option>Parafina</option><option>Otro</option>
+      </select>
+
+      <label>Notas clínicas / Comentario</label>
+      <textarea id="notas" rows="3" placeholder="Información clínica relevante..."></textarea>
+
+      <button onclick="guardarDatosMuestra()" style="margin-top:1.5rem;background:#10b981">
+        Guardar datos y Continuar
+      </button>
+
+      <div id="msgMuestra" style="margin-top:1rem;font-weight:600;color:#10b981"></div>
+    </div>
+  </div>
+
+  <!-- PESTAÑAS VACÍAS (el resto carga con los JS) -->
+  <div id="protocolos" class="tab container"><div class="card"><h2>Protocolos</h2>Cargando…</div></div>
+  <div id="timer" class="tab container"><div class="card"><h2>Timer</h2>Cargando…</div></div>
+  <div id="inventario" class="tab container"><div class="card"><h2>Inventario</h2>Cargando…</div></div>
+  <div id="ia" class="tab container"><div class="card"><h2>Analizador IA</h2>Cargando…</div></div>
+  <div id="informe" class="tab container"><div class="card"><h2>Informe</h2>Cargando…</div></div>
+</div>
+
+<button class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<!-- MENÚ INFERIOR – SCROLL PERFECTO -->
+<nav>
+  <div>
+    <button data-tab="home" class="active">Datos</button>
+    <button data-tab="protocolos">Protocolos</button>
+    <button data-tab="timer">Timer</button>
+    <button data-tab="inventario">Inventario</button>
+    <button data-tab="ia">IA</button>
+    <button data-tab="informe">Informe</button>
+  </div>
+</nav>
 
 <script>
+// Fecha automática
+document.getElementById('fechaEntrada').value = new Date().toLocaleString('es-ES');
+
+// GUARDAR DATOS DE MUESTRA – SIN "OTROS"
 function guardarDatosMuestra() {
   const organo = document.getElementById("organo").value || "No indicado";
 
@@ -137,216 +182,33 @@ function guardarDatosMuestra() {
   document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
   document.getElementById("msgMuestra").style.color = "#10b981";
 
-  // Pasar a Protocolos
   document.querySelector('[data-tab="protocolos"]').click();
 }
-</script>
-      
-      <label>Tipo de muestra <span class="required">*</span></label>
-      <select id="tipoMuestra" required>
-        <option value="">Seleccionar...</option>
-        <option>Biopsia</option>
-        <option>Pieza quirúrgica</option>
-        <option>Citología</option>
-        <option>Autopsia</option>
-      </select>
 
-      <label>Condición de llegada <span class="required">*</span></label>
-      <select id="condicion" required>
-        <option value="">Seleccionar...</option>
-        <option>Formol al 10%</option>
-        <option>Fresco</option>
-        <option>Congelado</option>
-        <option>Parafina</option>
-        <option>Otro</option>
-      </select>
-
-      <label>Notas clínicas / Comentario</label>
-      <textarea id="notas" rows="3" placeholder="Información clínica relevante, sospecha diagnóstica..."></textarea>
-
-      <button onclick="guardarDatosMuestra()" style="margin-top:1rem; background:#10b981;">
-        Guardar datos y Continuar
-      </button>
-
-      <div id="msgMuestra" style="margin-top:1rem; font-weight:600; color:#10b981;"></div>
-    </div>
-  </div>
-
-  <!-- Los demás tabs siguen igual (protocolos, timer, inventario, ia, informe) -->
-  <div id="protocolos" class="tab container"><div class="card"><h2>Protocolos</h2>Cargando protocolos…</div></div>
-  <div id="timer" class="tab container"><div class="card"><h2>Timer</h2>Cargando…</div></div>
-  <div id="inventario" class="tab container"><div class="card"><h2>Inventario</h2>Cargando…</div></div>
-  <!-- PESTAÑA IA – VERSIÓN FINAL BONITA EN MÓVIL Y ORDENADOR -->
-<!-- PESTAÑA IA – VERSIÓN MÓVIL Y ORDENADOR 100% BONITA -->
-<div id="ia" class="tab container">
-  <div class="card">
-    <h2>Analizador IA</h2>
-    <p style="text-align:center;font-size:1.1rem;margin-bottom:2rem">Sube o fotografía el corte histológico</p>
-
-    <!-- MODO -->
-    <div style="margin:2rem 0">
-      <p style="text-align:center;font-weight:600;margin-bottom:1rem">Modo activo:</p>
-      <div style="display:flex;flex-direction:column;gap:1rem;align-items:center">
-        <button id="localBtn" class="modoBtn active" style="width:90%;max-width:400px;padding:1.5rem;font-size:1.3rem;border-radius:16px;background:#e0e7ff;border:3px solid #6366f1">
-          <span style="font-size:3rem">📴</span><br>
-          <strong style="font-size:1.4rem;color:#4338ca">LOCAL</strong><br>
-          <small style="color:#6366f1">Offline · Siempre funciona</small>
-        </button>
-        <button id="hfBtn" class="modoBtn" style="width:90%;max-width:400px;padding:1.5rem;font-size:1.3rem;border-radius:16px;background:#f0fdf4;border:3px solid #10b981">
-          <span style="font-size:3rem">🌐</span><br>
-          <strong style="font-size:1.4rem;color:#166534">HUGGING FACE</strong><br>
-          <small style="color:#16a34a">IA real · Solo con clave</small>
-        </button>
-      </div>
-    </div>
-
-    <!-- CLAVE -->
-    <div id="claveDiv" style="display:none;margin:2rem 0;width:90%;max-width:400px;margin-left:auto;margin-right:auto">
-      <input type="password" id="hfInput" placeholder="Pega tu clave hf_..." style="width:100%;padding:1.2rem;border-radius:12px;border:1px solid #cbd5e1;font-size:1.1rem">
-      <div style="margin-top:1rem;text-align:center">
-        <button id="saveKeyBtn">Activar IA real</button>
-        <button id="removeKeyBtn" style="background:#dc2626;margin-left:1rem">Quitar clave</button>
-      </div>
-    </div>
-
-    <!-- BOTONES SUBIR / CÁMARA -->
-    <div style="display:flex;gap:2rem;justify-content:center;margin:3rem 0;flex-wrap:wrap">
-      <button id="uploadBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">
-        Subir imagen
-      </button>
-      <button id="camBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">
-        Cámara
-      </button>
-    </div>
-
-    <input type="file" id="fileInput" accept="image/*" style="display:none">
-    <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none">
-
-    <div id="preview" style="text-align:center;margin:2.5rem 0"></div>
-
-    <div style="text-align:center;margin:2rem 0">
-      <button id="analyzeBtn" disabled style="padding:1.5rem 4rem;font-size:1.5rem;border-radius:20px;background:#1e40af;color:white">
-        Analizar
-      </button>
-    </div>
-
-    <div id="result" style="margin-top:2rem"></div>
-  </div>
-</div>
-
-    <input type="file" id="fileInput" accept="image/*" style="display:none">
-    <input type="file" id="camInput" accept="image/*" capture="environment" style="display:none">
-
-    <div id="preview" style="text-align:center;margin:2rem 0"></div>
-
-    <div style="text-align:center">
-      <button id="analyzeBtn" disabled style="padding:1.2rem 3rem;font-size:1.3rem;border-radius:16px;margin:1rem 0">
-        Analizar
-      </button>
-    </div>
-
-    <div id="result" style="margin-top:1.5rem"></div>
-  </div>
-</div>
-  <div id="informe" class="tab container"><div class="card"><h2>Informe</h2>Cargando…</div></div>
-</div>
-
-<button class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
-<div id="preview" style="text-align:center; margin:2rem 0;">
-  <!-- Aquí aparecerá la imagen subida -->
-</div>
-<nav style="position:fixed; bottom:0; left:0; width:100%; background:white; border-top:1px solid #ddd; z-index:1000; overflow-x:auto; overflow-y:hidden;">
-  <div style="display:flex; min-width:max-content; padding:0.5rem 0;">
-    <button data-tab="home" class="active" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:100px;">Datos</button>
-    <button data-tab="protocolos" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:120px;">Protocolos</button>
-    <button data-tab="timer" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:100px;">Timer</button>
-    <button data-tab="inventario" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:120px;">Inventario</button>
-    <button data-tab="ia" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:80px;">IA</button>
-    <button data-tab="informe" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:110px;">Informe</button>
-  </div>
-</nav>
-<script>
-  // Fecha automática
-  document.getElementById('fechaEntrada').value = new Date().toLocaleString('es-ES');
-
-  // Guardar datos de la muestra
-  function guardarDatosMuestra() {
-    const datos = {
-      codigo: document.getElementById('codigoMuestra').value.trim(),
-      tecnico: document.getElementById('tecnico').value.trim(),
-      fecha: document.getElementById('fechaEntrada').value,
-      organo: document.getElementById('organo').value,
-      tipo: document.getElementById('tipoMuestra').value,
-      condicion: document.getElementById('condicion').value,
-      notas: document.getElementById('notas').value.trim(),
-      guardadoEn: new Date().toISOString()
-    };
-
-    if (!datos.codigo || !datos.tecnico || !datos.organo || !datos.tipo || !datos.condicion) {
-      alert('Por favor completa todos los campos obligatorios');
-      return;
-    }
-
-    localStorage.setItem('anatoflow_muestra_v22', JSON.stringify(datos));
-    document.getElementById('msgMuestra').textContent = 'Datos de la muestra guardados correctamente';
-    document.getElementById('msgMuestra').style.color = '#10b981';
-
-    // Pasar automáticamente al tab Protocolos
-    document.querySelector('[data-tab="protocolos"]').click();
+// CARGAR DATOS GUARDADOS
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('anatoflow_muestra_v22');
+  if (saved) {
+    const d = JSON.parse(saved);
+    document.getElementById('codigoMuestra').value = d.codigo || '';
+    document.getElementById('tecnico').value = d.tecnico || '';
+    document.getElementById('organo').value = d.organo || '';
+    document.getElementById('tipoMuestra').value = d.tipo || '';
+    document.getElementById('condicion').value = d.condicion || '';
+    document.getElementById('notas').value = d.notas || '';
+    document.getElementById('msgMuestra').textContent = 'Datos cargados de sesión anterior';
+    document.getElementById('msgMuestra').style.color = '#3b82f6';
   }
-
-  // Cargar datos guardados al abrir la app
-  window.addEventListener('load', () => {
-    const saved = localStorage.getItem('anatoflow_muestra_v22');
-    if (saved) {
-      const d = JSON.parse(saved);
-      document.getElementById('codigoMuestra').value = d.codigo || '';
-      document.getElementById('tecnico').value = d.tecnico || '';
-      document.getElementById('organo').value = d.organo || '';
-      document.getElementById('tipoMuestra').value = d.tipo || '';
-      document.getElementById('condicion').value = d.condicion || '';
-      document.getElementById('notas').value = d.notas || '';
-      document.getElementById('msgMuestra').textContent = 'Datos cargados de sesión anterior';
-      document.getElementById('msgMuestra').style.color = '#3b82f6';
-    }
-  });
+});
 </script>
 
-<!-- Tus scripts originales -->
+<!-- TUS SCRIPTS -->
 <script src="js/ui.js"></script>
 <script src="js/protocols.js"></script>
 <script src="js/timer.js"></script>
 <script src="js/inventory.js"></script>
 <script src="js/ai-final.js"></script>
 <script src="js/report.js"></script>
-<script>
-if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then(regs => regs.forEach(reg => reg.unregister()));
-</script>
+
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
