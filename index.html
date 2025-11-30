@@ -68,7 +68,6 @@
 
 <div class="container">
 
-  <!-- DATOS DE LA MUESTRA -->
   <div id="home" class="tab active">
     <div class="card">
       <h2>Datos de la Muestra</h2>
@@ -124,7 +123,7 @@
       <label>Notas clínicas / Comentario</label>
       <textarea id="notas" rows="3" placeholder="Información clínica relevante..."></textarea>
 
-      <button onclick="guardarDatosMuestra()" style="margin-top:1.5rem;background:#10b981">
+      <button **onclick="guardarDatosMuestra()"** style="margin-top:1.5rem;background:#10b981">
         Guardar datos y Continuar
       </button>
 
@@ -132,17 +131,14 @@
     </div>
   </div>
 
-  <!-- PESTAÑAS VACÍAS (el resto carga con los JS) -->
   <div id="protocolos" class="tab container"><div class="card"><h2>Protocolos</h2>Cargando…</div></div>
   <div id="timer" class="tab container"><div class="card"><h2>Timer</h2>Cargando…</div></div>
   <div id="inventario" class="tab container"><div class="card"><h2>Inventario</h2>Cargando…</div></div>
-  <!-- PESTAÑA IA – VERSIÓN LIMPIA Y PROFESIONAL -->
-<div id="ia" class="tab container">
+  <div id="ia" class="tab container">
   <div class="card">
     <h2>Analizador IA</h2>
     <p style="text-align:center">Sube o fotografía el corte histológico</p>
 
-    <!-- MODO -->
     <div style="text-align:center;margin:2rem 0">
       <strong>Modo activo:</strong><br><br>
       <div style="display:flex;flex-direction:column;gap:1.5rem;align-items:center">
@@ -159,12 +155,10 @@
       </div>
     </div>
 
-    <!-- MENSAJE IA REAL ACTIVADA -->
     <div id="iaActivaMsg" style="display:none;text-align:center;margin:2rem 0;padding:1.2rem;background:#ecfdf5;border-radius:12px;border:2px solid #10b981;color:#166534;font-weight:bold;font-size:1.2rem">
       ✓ IA real (Gemini) activada
     </div>
 
-    <!-- RECUADRO CLAVE – SOLO AL PULSAR GEMINI -->
     <div id="claveDiv" style="display:none;margin:2rem 0">
       <input type="password" id="geminiInput" placeholder="Pega tu clave Gemini AIza..." style="width:100%;padding:1.2rem;border-radius:12px;border:1px solid #cbd5e1;font-size:1.1rem">
       <div style="margin-top:1rem;text-align:center">
@@ -173,7 +167,6 @@
       </div>
     </div>
 
-    <!-- BOTONES SUBIR / CÁMARA -->
     <div style="display:flex;gap:2rem;justify-content:center;margin:3rem 0;flex-wrap:wrap">
       <button id="uploadBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">Subir imagen</button>
       <button id="camBtn" style="padding:1.5rem 3rem;font-size:1.4rem;border-radius:16px;background:#1e40af;color:white">Cámara</button>
@@ -196,7 +189,6 @@
 
 <button class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
 
-<!-- MENÚ INFERIOR – SCROLL PERFECTO -->
 <nav>
   <div>
     <button data-tab="home" class="active">Datos</button>
@@ -209,11 +201,30 @@
 </nav>
 
 <script>
-// Fecha automática
+// Función para manejo de pestañas
+function navigateToTab(tabId) {
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+    });
+    document.getElementById(tabId).classList.add('active');
+    
+    document.querySelectorAll('nav button').forEach(btn => {
+        btn.classList.remove('active');
+    });
+    document.querySelector(`nav button[data-tab="${tabId}"]`).classList.add('active');
+}
+
+// Lógica de navegación para el menú inferior
+document.querySelectorAll('nav button').forEach(button => {
+    button.addEventListener('click', function() {
+        navigateToTab(this.getAttribute('data-tab'));
+    });
+});
+
+// Función Fecha automática
 document.getElementById('fechaEntrada').value = new Date().toLocaleString('es-ES');
 
-// GUARDAR DATOS DE MUESTRA – SIN "OTROS"
-<script>
+// 💾 FUNCIÓN GUARDAR DATOS Y CONTINUAR (Asignada al onclick)
 function guardarDatosMuestra() {
   const organo = document.getElementById("organo").value || "No indicado";
 
@@ -233,16 +244,17 @@ function guardarDatosMuestra() {
     return;
   }
 
+  // Clave de localStorage para los datos de la muestra
   localStorage.setItem("anatoflow_muestra_v22", JSON.stringify(datos));
   document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
   document.getElementById("msgMuestra").style.color = "#10b981";
 
-  // Pasar a Protocolos
-  document.querySelector('[data-tab="protocolos"]').click();
+  // Pasar a Protocolos usando la función de navegación
+  navigateToTab("protocolos");
+  window.scrollTo({top:0,behavior:'smooth'}); // Regresar arriba de la nueva pestaña
 }
 </script>
 
-<!-- TUS SCRIPTS -->
 <script src="js/ui.js"></script>
 <script src="js/protocols.js"></script>
 <script src="js/timer.js"></script>
@@ -252,5 +264,3 @@ function guardarDatosMuestra() {
 
 </body>
 </html>
-
-
