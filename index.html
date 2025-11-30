@@ -56,7 +56,7 @@
       <input type="text" id="fechaEntrada" readonly value="Cargando...">
 
       <label>Origen del tejido / Órgano <span class="required">*</span></label>
-<label>Origen del tejido / Órgano <span class="required">*</span></label>
+
 <select id="organo" required>
   <option value="">Seleccionar órgano...</option>
   
@@ -255,14 +255,14 @@ function guardarDatosMuestra() {
 <div id="preview" style="text-align:center; margin:2rem 0;">
   <!-- Aquí aparecerá la imagen subida -->
 </div>
-<nav style="position:fixed; bottom:0; width:100%; background:white; border-top:1px solid #ddd; display:flex; z-index:99; overflow-x:auto; white-space:nowrap; padding-bottom:env(safe-area-inset-bottom);">
-  <div style="display:flex; min-width:max-content;">
-    <button data-tab="home" class="active">Datos</button>
-    <button data-tab="protocolos">Protocolos</button>
-    <button data-tab="timer">Timer</button>
-    <button data-tab="inventario">Inventario</button>
-    <button data-tab="ia">IA</button>
-    <button data-tab="informe">Informe</button>
+<nav style="position:fixed; bottom:0; left:0; width:100%; background:white; border-top:1px solid #ddd; z-index:1000; overflow-x:auto; overflow-y:hidden;">
+  <div style="display:flex; min-width:max-content; padding:0.5rem 0;">
+    <button data-tab="home" class="active" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:100px;">Datos</button>
+    <button data-tab="protocolos" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:120px;">Protocolos</button>
+    <button data-tab="timer" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:100px;">Timer</button>
+    <button data-tab="inventario" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:120px;">Inventario</button>
+    <button data-tab="ia" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:80px;">IA</button>
+    <button data-tab="informe" style="flex:0 0 auto; padding:1rem 1.2rem; min-width:110px;">Informe</button>
   </div>
 </nav>
 <script>
@@ -325,6 +325,7 @@ if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().the
 </body>
 
 </html>
+
 
 
 
