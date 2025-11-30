@@ -33,50 +33,55 @@
 
   // GEMINI REAL
   async function analizarGemini(file, organo) {
-    const key = localStorage.getItem(KEY_GEMINI);
-    if (!key) return analizarLocal(organo);
+  const key = localStorage.getItem(KEY_GEMINI_KEY);
+  if (!key) return analizarLocal(organo);
 
-    const reader = new FileReader();
-    const base64 = await new Promise(resolve => {
-      reader.onload = e => resolve(e.target.result.split(",")[1]);
-      reader.readAsDataURL(file);
+  const reader = new FileReader();
+  const base64 = await new Promise((resolve, reject) => {
+    reader.onload = e => resolve(e.target.result.split(',')[1]);
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+
+  const prompt = `Eres un asistente educativo para técnicos de anatomía patológica. Analiza esta imagen de corte histológico de ${organo || "tejido desconocido"}. Responde en español, estructurado y breve:
+
+• **Calidad técnica**: Enfoque, tinción, artefactos (Alta/Media/Baja).
+• **Estructuras clave**: Foliculos, coloide, núcleos, etc.
+• **Hallazgos celulares**: Normal, reactivo, atipia, sospecha maligna.
+• **Nivel**: OK / Revisar / Rehacer.
+• **Comentario educativo**: Sugerencia para aprendizaje (sin diagnóstico final).
+
+Ejemplo: "Calidad: Alta. Estructuras: Foliculos tiroideos. Hallazgos: Coloide homogéneo, células regulares. Nivel: OK. Comentario: Aspecto normal de tiroides."`;
+
+  try {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [{
+          parts: [
+            { text: prompt },
+            { inline_data: { mime_type: file.type, data: base64 } }
+          ]
+        }]
+      })
     });
 
-    const prompt = `Analiza esta imagen histológica de ${organo || "tejido desconocido"}. Describe con detalle:
-• Calidad técnica (enfoque, tinción, artefactos)
-• Estructuras principales visibles
-• Hallazgos celulares (normal, reactivo, atipia, sospecha maligna)
-• Comentario educativo breve
-Responde en español, máximo 4-5 líneas, estilo técnico pero claro.`;
+    if (!res.ok) throw new Error("Error Gemini");
 
-    try {
-      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${key}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [{
-            parts: [
-              { text: prompt },
-              { inline_data: { mime_type: file.type, data: base64 } }
-            ]
-          }]
-        })
-      });
+    const data = await res.json();
+    const texto = data.candidates[0].content.parts[0].text.trim();
 
-      const data = await res.json();
-      const texto = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sin respuesta";
-
-      return {
-        status: texto.toLowerCase().includes("normal") ? "OK" : "Revisar",
-        hallazgos: `IA REAL (Gemini 1.5 Flash)\n${texto}`,
-        educativo: "Análisis multimodal avanzado.",
-        disclaimer: "Resultado preliminar – confirmar con patólogo."
-      };
-    } catch (e) {
-      return { status: "Error", hallazgos: "Error temporal – modo local activo." };
-    }
+    return {
+      status: texto.includes("OK") ? "OK" : texto.includes("Revisar") ? "Revisar" : "Rehacer",
+      hallazgos: `IA REAL (Gemini 1.5 Flash)\n${texto}`,
+      educativo: "Análisis multimodal educativo.",
+      disclaimer: "Sugerencia preliminar – confirmar con patólogo."
+    };
+  } catch (e) {
+    return { status: "Error", hallazgos: "Error temporal – modo local activo. Verifica clave Gemini." };
   }
-
+}
   function initUI() {
     const c = document.getElementById("ia");
     if (!c || c.querySelector("#aiOK")) return;
@@ -179,3 +184,4 @@ Responde en español, máximo 4-5 líneas, estilo técnico pero claro.`;
 
   initUI();
 })();
+
