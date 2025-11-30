@@ -117,4 +117,124 @@
           <option>Vejiga</option>
           <option>Útero</option>
           <option>Ovarios</option>
-          <option
+          <option>Próstata</option>
+          <option>Testículos</option>
+        </optgroup>
+        <optgroup label="Otros tejidos">
+          <option>Piel</option>
+          <option>Linfonodo</option>
+          <option>Médula ósea</option>
+          <option>Tejido adiposo</option>
+          <option>Músculo esquelético</option>
+          <option>Hueso</option>
+        </optgroup>
+      </select>
+
+      <label>Tipo de muestra <span class="required">*</span></label>
+      <select id="tipoMuestra" required>
+        <option value="">Seleccionar...</option>
+        <option>Biopsia</option>
+        <option>Pieza quirúrgica</option>
+        <option>Citología</option>
+        <option>Autopsia</option>
+      </select>
+
+      <label>Condición de llegada <span class="required">*</span></label>
+      <select id="condicion" required>
+        <option value="">Seleccionar...</option>
+        <option>Formol al 10%</option>
+        <option>Fresco</option>
+        <option>Congelado</option>
+        <option>Parafina</option>
+        <option>Otro</option>
+      </select>
+
+      <label>Notas clínicas / Comentario</label>
+      <textarea id="notas" rows="3" placeholder="Información clínica relevante..."></textarea>
+
+      <button onclick="guardarDatosMuestra()" style="margin-top:1.5rem;background:#10b981">
+        Guardar datos y Continuar
+      </button>
+
+      <div id="msgMuestra" style="margin-top:1rem;font-weight:600;color:#10b981"></div>
+    </div>
+  </div>
+
+  <!-- PESTAÑAS -->
+  <div id="protocolos" class="tab container"><div class="card"><h2>Protocolos</h2>Cargando…</div></div>
+  <div id="timer" class="tab container"><div class="card"><h2>Timer</h2>Cargando…</div></div>
+  <div id="inventario" class="tab container"><div class="card"><h2>Inventario</h2>Cargando…</div></div>
+  <div id="ia" class="tab container"><div class="card"><h2>Analizador IA</h2>Cargando…</div></div>
+  <div id="informe" class="tab container"><div class="card"><h2>Informe</h2>Cargando…</div></div>
+</div>
+
+<button class="fab" onclick="window.scrollTo({top:0,behavior:'smooth'})">↑</button>
+
+<nav>
+  <div>
+    <button data-tab="home" class="active">Datos</button>
+    <button data-tab="protocolos">Protocolos</button>
+    <button data-tab="timer">Timer</button>
+    <button data-tab="inventario">Inventario</button>
+    <button data-tab="ia">IA</button>
+    <button data-tab="informe">Informe</button>
+  </div>
+</nav>
+
+<script>
+// Fecha automática
+document.getElementById('fechaEntrada').value = new Date().toLocaleString('es-ES');
+
+// GUARDAR DATOS
+function guardarDatosMuestra() {
+  const organo = document.getElementById("organo").value || "No indicado";
+
+  const datos = {
+    codigo: document.getElementById('codigoMuestra').value.trim(),
+    tecnico: document.getElementById('tecnico').value.trim(),
+    fecha: document.getElementById('fechaEntrada').value,
+    organo: organo,
+    tipo: document.getElementById('tipoMuestra').value,
+    condicion: document.getElementById('condicion').value,
+    notas: document.getElementById('notas').value.trim(),
+    guardadoEn: new Date().toISOString()
+  };
+
+  if (!datos.codigo || !datos.tecnico || datos.organo === "No indicado" || !datos.tipo || !datos.condicion) {
+    alert("Por favor completa todos los campos obligatorios");
+    return;
+  }
+
+  localStorage.setItem("anatoflow_muestra_v22", JSON.stringify(datos));
+  document.getElementById("msgMuestra").textContent = "Datos guardados correctamente";
+  document.getElementById("msgMuestra").style.color = "#10b981";
+
+  document.querySelector('[data-tab="protocolos"]').click();
+}
+
+// CARGAR DATOS
+window.addEventListener('load', () => {
+  const saved = localStorage.getItem('anatoflow_muestra_v22');
+  if (saved) {
+    const d = JSON.parse(saved);
+    document.getElementById('codigoMuestra').value = d.codigo || '';
+    document.getElementById('tecnico').value = d.tecnico || '';
+    document.getElementById('organo').value = d.organo || '';
+    document.getElementById('tipoMuestra').value = d.tipo || '';
+    document.getElementById('condicion').value = d.condicion || '';
+    document.getElementById('notas').value = d.notas || '';
+    document.getElementById('msgMuestra').textContent = 'Datos cargados de sesión anterior';
+    document.getElementById('msgMuestra').style.color = '#3b82f6';
+  }
+});
+</script>
+
+<script src="js/ui.js"></script>
+<script src="js/protocols.js"></script>
+<script src="js/timer.js"></script>
+<script src="js/inventory.js"></script>
+<script src="js/ai-final.js"></script>
+<script src="js/report.js"></script>
+
+</body>
+</html>
